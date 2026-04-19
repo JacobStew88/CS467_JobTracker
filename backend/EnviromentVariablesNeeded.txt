@@ -1,0 +1,4 @@
+PORT = PORTNUMBER
+DATABASE_URL = Temporary Database URL
+JWT_SECRET = Temporary JWT Secret
+BYCRYPT_SALT = Temporary BCrypt Salt
