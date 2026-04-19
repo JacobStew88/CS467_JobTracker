@@ -3,14 +3,17 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 // Contact interface
 export interface Contact extends RowDataPacket {
-    contact_id: number;
-    user_id: number;
-    job_id: number;
+    contact_id: number; // PK
+    user_id: number; // FK
     first_name: string;
     last_name?: string;
     email?: string;
     phone?: string;
     notes?: string
+};
+
+export interface JobContact extends Contact {
+    relationship_type: string;
 }
 
 const CONTACTSTABLE: string = 'Contacts';
@@ -42,13 +45,19 @@ export const createContact = async (contact: Contact): Promise<Contact> => {
 // Get all contacts for a users
 export const getContacts = async (user_id: Contact['user_id']): Promise<Contact[]> => {
     // Retrieve contacts for the specified user_id
-    const [content] = await pool.query<Contact[]>(`SELECT * FROM ${CONTACTSTABLE} WHERE user_id = ?`, [user_id]);
+    const [content] = await pool.query<Contact[]>(
+        `SELECT * FROM ${CONTACTSTABLE} WHERE user_id = ?`, 
+        [user_id]
+    );
     return content;
 };
 
 // Get a contact by contact_id
 export const getContactById = async (user_id: Contact['user_id'], contact_id: Contact['contact_id']): Promise<Contact | null> => {
-    const [content] = await pool.query<Contact[]>(`SELECT * FROM ${CONTACTSTABLE} WHERE user_id = ? AND contact_id = ?`, [user_id, contact_id]);
+    const [content] = await pool.query<Contact[]>(
+        `SELECT * FROM ${CONTACTSTABLE} WHERE user_id = ? AND contact_id = ?`, 
+        [user_id, contact_id]
+    );
     return content.length > 0 ? content[0] : null;
 };
 
@@ -63,25 +72,40 @@ export const updateContact = async (contact: Contact): Promise<boolean> => {
 
 // Delete a contact
 export const deleteContact = async (user_id: Contact['user_id'], contact_id: Contact['contact_id']): Promise<boolean> => {
-    const [content] = await pool.query<ResultSetHeader>(`DELETE FROM ${CONTACTSTABLE} WHERE contact_id = ? AND user_id = ?`, [contact_id, user_id]);
+    const [content] = await pool.query<ResultSetHeader>(
+        `DELETE FROM ${CONTACTSTABLE} WHERE contact_id = ? AND user_id = ?`, 
+        [contact_id, user_id]
+    );
     return content.affectedRows > 0;
 }
 
 /* -- Creating the many to many link between contacts and jobs: -- */
 // Assign a contact to a job / job to a contact
-export const assignContactToJob = async (contact_id: number, job_id: number): Promise<boolean> => {
+export const assignContactToJob = async (job_id: number, contact_id: number, relationship_type: string ): Promise<boolean> => {
     const [content] = await pool.query<ResultSetHeader>(
-        `INSERT INTO ${JOBCONTACTSTABLE} (contact_id, job_id) VALUES (?, ?)`,
-        [contact_id, job_id]
+        `INSERT INTO ${JOBCONTACTSTABLE} (job_id, contact_id, relationship_type) VALUES (?, ?, ?)`,
+        [job_id, contact_id, relationship_type]
     );
     return content.affectedRows > 0;
 };
 
 // Remove a contact from a job / job from a contact
-export const removeContactFromJob = async (contact_id: number, job_id: number): Promise<boolean> => {
+export const removeContactFromJob = async (job_id: number, contact_id: Contact['contact_id']): Promise<boolean> => {
     const [content] = await pool.query<ResultSetHeader>(
-        `DELETE FROM ${JOBCONTACTSTABLE} WHERE contact_id = ? AND job_id = ?`,
-        [contact_id, job_id]
+        `DELETE FROM ${JOBCONTACTSTABLE} WHERE job_id = ? AND contact_id = ?`,
+        [job_id, contact_id]
     );
     return content.affectedRows > 0;
 };
+
+// Get contacts from a specific job
+export const getContactsFromJob = async(job_id: number, user_id: number): Promise<JobContact[]> => {
+    const [content] = await pool.query<JobContact[]>(
+        `SELECT c.contact_id, c.user_id,c.name, c.email, c.phone, jc.relationship_type 
+         FROM ${CONTACTSTABLE} c
+         INNER JOIN ${JOBCONTACTSTABLE} jc ON c.contact_id = jc.contact_id
+         WHERE jc.job_id = ? AND c.user_id = ?`, 
+        [job_id, user_id]
+    );
+    return content;
+}

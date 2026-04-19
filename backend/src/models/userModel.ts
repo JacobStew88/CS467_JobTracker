@@ -3,7 +3,7 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 // User interface
 export interface User extends RowDataPacket {
-    user_id: number;
+    user_id: number; // PK
     username: string;
     email: string;
     password_hash: string;
