@@ -71,14 +71,14 @@ export const assignSkillToJob = async(job_id: number, skill_id: Skill['skill_id'
 // Remove a skill from a job / a job from a skill
 export const removeSkillFromJob = async(job_id: number, skill_id: Skill['skill_id']): Promise<boolean> => {
     const [content] = await pool.query<ResultSetHeader>(
-        `DELETE FROM ${JOBSKILLSTABLE} WHERE job_id = ? AND contact_id = ?`,
+        `DELETE FROM ${JOBSKILLSTABLE} WHERE job_id = ? AND skill_id = ?`,
         [job_id, skill_id]
     );
     return content.affectedRows > 0; 
 }
 
 // Get all skills from a specific job
-export const getSkillsFromJob = async(job_id: number, skill_id: Skill['skill_id']): Promise<Skill[]> => {
+export const getSkillsFromJob = async(job_id: number): Promise<Skill[]> => {
     const [content] = await pool.query<Skill[]>(
         `SELECT s.* FROM ${SKILLSTABLE} s
         JOIN ${JOBSKILLSTABLE} js ON s.skill_id = js.skill_id
