@@ -45,6 +45,15 @@ export const getUser = async (user_id: User['user_id']): Promise<PublicUser | nu
     return content.length > 0 ? content[0] : null;
 }   
 
+// Add this to your model file
+export const getUserByEmail = async (email: string): Promise<User | null> => {
+    const [content] = await pool.query<User[]>(
+        `SELECT * FROM ${USERSTABLE} WHERE email = ?`, 
+        [email]
+    );
+    return content.length > 0 ? content[0] : null;
+};
+
 // Update a user
 export const updateUser = async (user: PublicUser): Promise<boolean> => {
     const [content] = await pool.query<ResultSetHeader>(
