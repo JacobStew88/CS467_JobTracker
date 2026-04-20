@@ -3,7 +3,7 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 // User interface
 export interface User extends RowDataPacket {
-    user_id: number;
+    user_id: number; // PK
     username: string;
     email: string;
     password_hash: string;
@@ -52,7 +52,7 @@ export const getUser = async (user_id: User['user_id']): Promise<PublicUser | nu
 // Update a user
 export const updateUser = async(user: User): Promise<boolean> => {
     const [content] = await pool.query<ResultSetHeader>(
-        `Update ${USERSTABLE} SET username = ?, email = ? WHERE user_id = ?`,
+        `UPDATE ${USERSTABLE} SET username = ?, email = ? WHERE user_id = ?`,
         [user.username, user.email, user.user_id]
     );
     return content.affectedRows > 0;
