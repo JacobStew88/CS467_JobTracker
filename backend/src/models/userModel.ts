@@ -52,7 +52,7 @@ export const getUser = async (user_id: User['user_id']): Promise<PublicUser | nu
 // Update a user
 export const updateUser = async(user: User): Promise<boolean> => {
     const [content] = await pool.query<ResultSetHeader>(
-        `Update ${USERSTABLE} SET username = ?, email = ? WHERE user_id = ?`,
+        `UPDATE ${USERSTABLE} SET username = ?, email = ? WHERE user_id = ?`,
         [user.username, user.email, user.user_id]
     );
     return content.affectedRows > 0;

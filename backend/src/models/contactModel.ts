@@ -101,7 +101,7 @@ export const removeContactFromJob = async (job_id: number, contact_id: Contact['
 // Get contacts from a specific job
 export const getContactsFromJob = async(job_id: number, user_id: number): Promise<JobContact[]> => {
     const [content] = await pool.query<JobContact[]>(
-        `SELECT c.contact_id, c.user_id,c.name, c.email, c.phone, jc.relationship_type 
+        `SELECT c.contact_id, c.user_id, c.first_name, c.last_name, c.email, c.phone, jc.relationship_type 
          FROM ${CONTACTSTABLE} c
          INNER JOIN ${JOBCONTACTSTABLE} jc ON c.contact_id = jc.contact_id
          WHERE jc.job_id = ? AND c.user_id = ?`, 
