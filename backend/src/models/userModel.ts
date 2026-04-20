@@ -1,33 +1,28 @@
 import { pool } from '../config/db';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
-// User interface
+// User interfaces
 export interface User extends RowDataPacket {
     user_id: number;
     username: string;
     email: string;
     password_hash: string;
 }
-export type PublicUser = Omit<User, 'password_hash'>;
+
+export interface PublicUser extends RowDataPacket {
+    user_id: number;
+    username: string;
+    email: string;
+}
+
+// Omit the auto-incremented ID for creations
+export type NewUser = Omit<User, 'user_id'>;
 
 const USERSTABLE: string = 'Users';
 
-/*
-@result: ResultSetHeader {
-    fieldCount: 0,
-    affectedRows: 0,
-    insertId: 0,
-    info: '',
-    serverStatus: 2,
-    warningStatus: 0,
-    changedRows: 0
-}
-Source: https://sidorares.github.io/node-mysql2/docs/documentation/typescript-examples
-*/
-
 /* -- CRUD QUERIES FOR USERS: -- */
 // Create a new user
-export const createUser = async (user: User): Promise<PublicUser> => {
+export const createUser = async (user: NewUser): Promise<PublicUser> => {
     const [content] = await pool.query<ResultSetHeader>(
         `INSERT INTO ${USERSTABLE} (username, email, password_hash) VALUES (?, ?, ?)`,
         [user.username, user.email, user.password_hash]
@@ -37,20 +32,21 @@ export const createUser = async (user: User): Promise<PublicUser> => {
         user_id: content.insertId,
         username: user.username,
         email: user.email
-    };
+    } as PublicUser; // Cast is needed here since we are returning a raw object literal 
 };
 
 // Get a user
 export const getUser = async (user_id: User['user_id']): Promise<PublicUser | null> => {
-    const [content] = await pool.query<User[]>(
+    const [content] = await pool.query<PublicUser[]>(
         `SELECT user_id, username, email FROM ${USERSTABLE} WHERE user_id = ?`, 
         [user_id]
     );
-    return content.length > 0 ? content[0] as PublicUser : null;
+    
+    return content.length > 0 ? content[0] : null;
 }   
 
 // Update a user
-export const updateUser = async(user: User): Promise<boolean> => {
+export const updateUser = async (user: PublicUser): Promise<boolean> => {
     const [content] = await pool.query<ResultSetHeader>(
         `UPDATE ${USERSTABLE} SET username = ?, email = ? WHERE user_id = ?`,
         [user.username, user.email, user.user_id]
@@ -58,7 +54,7 @@ export const updateUser = async(user: User): Promise<boolean> => {
     return content.affectedRows > 0;
 }
 
-// Get user's hashed password -- NOTE: FOR BACKEND VERFICIATION ONLY --
+// Get user's hashed password -- NOTE: FOR BACKEND VERIFICATION ONLY --
 export const getUserPasswordHash = async (user_id: number): Promise<string | null> => {
     const [content] = await pool.query<RowDataPacket[]>(
         `SELECT password_hash FROM ${USERSTABLE} WHERE user_id = ?`, 
@@ -77,7 +73,7 @@ export const updatePassword = async (user_id: number, new_password_hash: string)
 };
 
 // Delete a user
-export const deleteUser = async(user_id: User['user_id']): Promise<boolean> => {
+export const deleteUser = async (user_id: User['user_id']): Promise<boolean> => {
     const [content] = await pool.query<ResultSetHeader>(
         `DELETE FROM ${USERSTABLE} WHERE user_id = ?`,
         [user_id]

@@ -8,19 +8,20 @@ export interface Skill extends RowDataPacket {
     user_id: number; // FK
     skill_name: string;
     comfort_level: number
-};
+}
 
+export type NewSkill = Omit<Skill, 'skill_id'>;
 const SKILLSTABLE: string = 'Skills'
 const JOBSKILLSTABLE: string = 'JobSkills'
 
 /* -- CRUD QUERIES FOR Skills: -- */
 //Create a skill
-export const createSkill = async (skill: Skill): Promise<Skill> => {
+export const createSkill = async (skill: NewSkill): Promise<Skill> => {
     const [content] = await pool.query<ResultSetHeader>(
         `INSERT INTO ${SKILLSTABLE} (user_id, skill_name, comfort_level) VALUES (?, ?, ?)`,
         [skill.user_id, skill.skill_name, skill.comfort_level]
     );
-    return {...skill, skill_id: content.insertId}
+    return {...skill, skill_id: content.insertId} as Skill;
 }
 
 // Get all skills for a user
@@ -42,7 +43,7 @@ export const getSkill = async (user_id: Skill['user_id'], skill_id: Skill['skill
 }
 
 // Update a specific skill
-export const updateSkill = async(skill: Skill): Promise<Boolean> => {
+export const updateSkill = async(skill: Skill): Promise<boolean> => {
     const [content] = await pool.query<ResultSetHeader>(
         `UPDATE ${SKILLSTABLE} SET skill_name = ?, comfort_level = ? WHERE user_id = ? and skill_id = ?`,
         [skill.skill_name, skill.comfort_level, skill.user_id, skill.skill_id]
@@ -51,7 +52,7 @@ export const updateSkill = async(skill: Skill): Promise<Boolean> => {
 }
 
 // Delete a specific skill
-export const deleteSkill = async(user_id: Skill['user_id'], skill_id: Skill['skill_id']): Promise<Boolean> => {
+export const deleteSkill = async(user_id: Skill['user_id'], skill_id: Skill['skill_id']): Promise<boolean> => {
     const [content] = await pool.query<ResultSetHeader>(
         `DELETE FROM ${SKILLSTABLE} WHERE user_id = ? and skill_id = ?`,
         [user_id, skill_id]

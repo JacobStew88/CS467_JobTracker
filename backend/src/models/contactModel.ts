@@ -12,6 +12,7 @@ export interface Contact extends RowDataPacket {
   notes?: string;
 }
 
+export type NewContact = Omit<Contact, 'contact_id'>;
 export interface JobContact extends Contact {
   relationship_type: string;
 }
@@ -33,15 +34,14 @@ Source: https://sidorares.github.io/node-mysql2/docs/documentation/typescript-ex
 */
 
 /* -- CRUD QUERIES FOR CONTACTS: -- */
-
 // Create a new contact
-export const createContact = async (contact: Contact): Promise<Contact> => {
+export const createContact = async (contact: NewContact): Promise<Contact> => {
   const [content] = await pool.query<ResultSetHeader>(
     `INSERT INTO ${CONTACTSTABLE} (user_id, first_name, last_name, email, phone, notes) VALUES (?, ?, ?, ?, ?, ?)`,
     [contact.user_id, contact.first_name, contact.last_name, contact.email, contact.phone, contact.notes]
   );
 
-  return { ...contact, contact_id: content.insertId };
+  return { ...contact, contact_id: content.insertId } as Contact;
 };
 
 // Get all contacts for a user
@@ -82,7 +82,6 @@ export const deleteContact = async (user_id: Contact["user_id"], contact_id: Con
 };
 
 /* -- Creating the many to many link between contacts and jobs: -- */
-
 // Assign a contact to a job / job to a contact
 export const assignContactToJob = async (job_id: number, contact_id: number, relationship_type: string): Promise<boolean> => {
   const [content] = await pool.query<ResultSetHeader>(
@@ -106,7 +105,7 @@ export const removeContactFromJob = async (job_id: number, contact_id: Contact["
 // Get contacts from a specific job
 export const getContactsFromJob = async (job_id: number, user_id: number): Promise<JobContact[]> => {
   const [content] = await pool.query<JobContact[]>(
-    `SELECT c.contact_id, c.user_id, c.first_name, c.last_name, c.email, c.phone, jc.relationship_type
+    `SELECT c.contact_id, c.user_id, c.first_name, c.last_name, c.email, c.phone, c.notes, jc.relationship_type
      FROM ${CONTACTSTABLE} c
      INNER JOIN ${JOBCONTACTSTABLE} jc ON c.contact_id = jc.contact_id
      WHERE jc.job_id = ? AND c.user_id = ?`,
