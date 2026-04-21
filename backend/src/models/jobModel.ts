@@ -7,7 +7,7 @@ export interface Job extends RowDataPacket {
   user_id: number; // FK
   company_name: string;
   job_title: string;
-  status: "applied" | "interviewing" | "offer" | "rejected";
+  status: "applied" | "waiting to hear back" | "interviewed" | "decision";
   application_date: Date;
 }
 
