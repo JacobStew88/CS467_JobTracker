@@ -2,7 +2,18 @@
   text-align: center;
 }
 
-.App-header {
+.header {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #282c34;
+  padding: 15px;
+  text-align: center;
+  z-index: 1000;
+}
+
+.body {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -13,7 +24,58 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.button-group{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
+.button {
+  background-color: #3f4502;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.button:hover{
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.login-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 250px;
+}
+
+.login-form input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.login-form button {
+  padding: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.login-form button:hover {
+  background: #1d4ed8;
+}
