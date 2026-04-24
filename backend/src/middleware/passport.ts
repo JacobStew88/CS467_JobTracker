@@ -25,3 +25,5 @@ passport.use(
 );
 
 export const requireAuth = passport.authenticate('jwt', { session: false });
+
+// Source: https://github.com/mikenicholson/passport-jwt w/ AI summary and clarifications
