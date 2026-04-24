@@ -1,6 +1,7 @@
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt, StrategyOptions } from 'passport-jwt';
 import { getUserById } from '../models/userModel';
+import { JWTUserPayload } from '../types/auth';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'DEVELOPMENT_FALL_BACK_KEY';
 
@@ -10,7 +11,7 @@ const option: StrategyOptions = {
 };
 
 passport.use(
-    new JwtStrategy(option, async (payload, done) => {
+    new JwtStrategy(option, async (payload: JWTUserPayload, done) => {
         try{
             const user = await getUserById(payload.user_id);
             if (user) {
