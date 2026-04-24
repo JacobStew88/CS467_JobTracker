@@ -22,17 +22,12 @@ const USERSTABLE: string = 'Users';
 
 /* -- CRUD QUERIES FOR USERS: -- */
 // Create a new user
-export const createUser = async (user: NewUser): Promise<PublicUser> => {
+export const createUser = async (user: NewUser): Promise<PublicUser['user_id']> => {
     const [content] = await pool.query<ResultSetHeader>(
         `INSERT INTO ${USERSTABLE} (username, email, password_hash) VALUES (?, ?, ?)`,
         [user.username, user.email, user.password_hash]
     );
-
-    return {
-        user_id: content.insertId,
-        username: user.username,
-        email: user.email
-    } as PublicUser; // Cast is needed here since we are returning a raw object literal 
+    return content.insertId as PublicUser['user_id']; 
 };
 
 // Get a user
@@ -41,15 +36,32 @@ export const getUser = async (user_id: User['user_id']): Promise<PublicUser | nu
         `SELECT user_id, username, email FROM ${USERSTABLE} WHERE user_id = ?`, 
         [user_id]
     );
-    
     return content.length > 0 ? content[0] : null;
 }   
 
-// Add this to your model file
+// Get a user by email
 export const getUserByEmail = async (email: string): Promise<User | null> => {
     const [content] = await pool.query<User[]>(
         `SELECT * FROM ${USERSTABLE} WHERE email = ?`, 
         [email]
+    );
+    return content.length > 0 ? content[0] : null;
+};
+
+// Get a user by username
+export const getUserByUsername = async (username: string): Promise<User | null> => {
+    const [content] = await pool.query<User[]>(
+        `SELECT * FROM ${USERSTABLE} WHERE username = ?`, 
+        [username]
+    );
+    return content.length > 0 ? content[0] : null;
+};
+
+// Get a user by ID
+export const getUserById = async (user_id: User['user_id']): Promise<User | null> => {
+    const [content] = await pool.query<User[]>(
+        `SELECT * FROM ${USERSTABLE} WHERE user_id = ?`, 
+        [user_id]
     );
     return content.length > 0 ? content[0] : null;
 };
