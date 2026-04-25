@@ -8,6 +8,7 @@ import {
     getUserByUsername, 
     createUser, 
 } from '../models/userModel';
+import { JWTUserPayload } from '../types/auth';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'DEVELOPMENT_FALL_BACK_KEY';
 
@@ -16,6 +17,12 @@ const ERROR_INVALID_CRED = {error: "Invalid Creditional"}
 
 export const userLogin = async (req: Request, res: Response): Promise<void> => {
     const { username, password } = req.body;
+
+    if (!username || !password) {
+        res.status(400).json({ error: "Missing username or password" });
+        return;
+    }
+
         try {
             // getUserby Email from DB
             const user: User | null  = await getUserByUsername(username);  
@@ -26,7 +33,7 @@ export const userLogin = async (req: Request, res: Response): Promise<void> => {
             if (!isPasswordValid) { res.status(401).json(ERROR_INVALID_CRED); return} 
 
             // Create and the give the tocken back to the user
-            const token = jwt.sign({ user_id: user.user_id }, JWT_SECRET, { expiresIn: '24h' });
+            const token = jwt.sign({ user_id: user.user_id } as JWTUserPayload, JWT_SECRET, { expiresIn: '24h' });
             res.status(200).json({ token });
 
         } catch (error) {
@@ -37,6 +44,12 @@ export const userLogin = async (req: Request, res: Response): Promise<void> => {
 
 export const userCreateAccount = async (req: Request, res: Response): Promise<void> => {
     const { email, username, password } = req.body;
+
+    if (!email || !username || !password) {
+        res.status(400).json({ error: "Missing email, username or password" });
+        return;
+    }
+
         try{
             // getUserbyEmail
             const existingUserEmail: User | null = await getUserByEmail(email); 
@@ -58,7 +71,7 @@ export const userCreateAccount = async (req: Request, res: Response): Promise<vo
             }); 
 
             // Create and the give the tocken back to the user
-            const token = jwt.sign({ user_id: newUserId }, JWT_SECRET, { expiresIn: '24h' });
+            const token = jwt.sign({ user_id: newUserId } as JWTUserPayload, JWT_SECRET, { expiresIn: '24h' });
             res.status(201).json({ token });
 
         } catch (error) {
