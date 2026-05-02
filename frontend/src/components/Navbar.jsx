@@ -13,8 +13,11 @@ export default function Navbar() {
   return (
     <div className="navbar">
     <nav className="nav-links">
+      {/* PUBLIC PAGES */}
       <Link to="/">Home</Link>
+      <Link to="/about">About</Link>
 
+      {/* AUTHORIZED PAGES */}
       {user ? (
         <>
           <Link to="/profile">Profile</Link>

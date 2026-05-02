@@ -13,9 +13,11 @@ export default function AccountCreation() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    console.log("SUBMIT FIRED")
 
     try {
       const data = await createAccount(email, username, password); 
+      console.log("API RESPONSE:",data);
 
       alert("Account created!");
 

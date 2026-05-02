@@ -54,7 +54,7 @@ export default function AddJob() {
 
         <select name="status" value={form.status} onChange={handleChange}>
           <option value="applied">Applied</option>
-          <option value="waiting to hear back">Waiting to hear back</option>
+          <option value="waiting">Waiting</option>
           <option value="interviewed">Interviewed</option>
           <option value="decision">Decision</option>
         </select>

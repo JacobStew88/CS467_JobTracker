@@ -13,7 +13,7 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/auth/login", {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,7 +28,7 @@ export default function Login() {
         return;
       }
 
-      login(data.token); // ✅ store token + set auth state
+      login(data.token); // store token + set auth state
 
       navigate("/profile"); // redirect after login
     } catch (err) {

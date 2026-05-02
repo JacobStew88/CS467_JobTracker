@@ -21,7 +21,7 @@ export default function Jobs() {
   async function handleDelete(id) {
     try {
       await deleteJob(id);
-      setJobs(jobs.filter(job => job.id !== id));
+      setJobs((prev) => prev.filter(job => job.job_id !== id));
     } catch (err) {
       alert(err.message);
     }
@@ -37,12 +37,12 @@ export default function Jobs() {
         <p>No jobs yet</p>
       ) : (
         jobs.map((job) => (
-          <div key={job.id} style={{ border: "1px solid gray", margin: 10 }}>
+          <div key={job.job_id} style={{ border: "1px solid gray", margin: 10 }}>
             <h3>{job.company_name}</h3>
             <p>{job.job_title}</p>
             <p>{job.status}</p>
 
-            <button onClick={() => handleDelete(job.id)}>
+            <button onClick={() => handleDelete(job.job_id)}>
               Delete
             </button>
           </div>

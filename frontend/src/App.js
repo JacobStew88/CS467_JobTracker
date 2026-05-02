@@ -24,30 +24,9 @@ function App() {
       <Route path="/signup" element={<SignUp/>} />
      
       {/* PROTECTED ROUTES */}
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/jobs"
-        element={
-          <ProtectedRoute>
-            <Jobs />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/add-job"
-        element={
-          <ProtectedRoute>
-            <AddJob />
-          </ProtectedRoute>
-        }
-      />       
+      <Route path="/profile" element={<ProtectedRoute> <Profile /></ProtectedRoute>} />
+      <Route path="/jobs" element={<ProtectedRoute> <Jobs /></ProtectedRoute>} />
+      <Route path="/add-job" element={<ProtectedRoute> <AddJob /></ProtectedRoute>} />   
     </Routes>
     </BrowserRouter>
     </AuthProvider>

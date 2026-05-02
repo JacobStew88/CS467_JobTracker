@@ -1,6 +1,6 @@
 import { authHeaders } from "./apiClient";
 
-const BASE_URL = "http://localhost:5000/jobs";
+const BASE_URL = `${process.env.REACT_APP_API_URL}/jobs`;
 
 // CREATE
 export async function createJob(jobData) {
@@ -17,7 +17,7 @@ export async function createJob(jobData) {
 
 // READ (ALL JOBS)
 export async function getJobs() {
-  const res = await fetch(BASE_URL, {
+  const res = await fetch(`${BASE_URL}`, {
     method: "GET",
     headers: authHeaders(),
   });
@@ -42,6 +42,7 @@ export async function updateJob(id, updates) {
 
 // DELETE
 export async function deleteJob(id) {
+  console.log("Deleting ID: ", id);
   const res = await fetch(`${BASE_URL}/${id}`, {
     method: "DELETE",
     headers: authHeaders(),
