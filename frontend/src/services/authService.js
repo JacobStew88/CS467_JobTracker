@@ -3,11 +3,11 @@ import { authHeaders } from "./apiClient";
 const BASE_URL = "http://localhost:5000";
 
 // LOGIN
-export async function loginUser(email, password) {
+export async function loginUser(username, password) {
   const res = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ username, password }),
   });
 
   const data = await res.json();
@@ -17,19 +17,22 @@ export async function loginUser(email, password) {
   return data;
 }
 
-// SIGNUP
-export async function createAccount(email, password) {
-  const res = await fetch(`${BASE_URL}/auth/create-account`, {
+// account creation
+export async function createAccount(email, username, password) {
+  const res = await fetch("http://localhost:5000/auth/create-account", {
     method: "POST",
-    headers: authHeaders(),
-    body: JSON.stringify({ email, password }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, username, password }), // ✅ IMPORTANT
   });
 
-  const data = await res.json();
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Signup failed");
+  }
 
-  if (!res.ok) throw new Error(data.message || "Signup failed");
-
-  return data;
+  return res.json();
 }
 
 // PROTECTED ROUTE (keep it here, not separate file)

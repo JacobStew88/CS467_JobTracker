@@ -7,9 +7,11 @@ import SignUp from './pages/SignUp'
 import Profile from "./pages/Profile"
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./components/AuthContext";
 
 function App() {
   return (
+    <AuthProvider>
     <BrowserRouter>
     <Navbar />
     <Routes>
@@ -32,6 +34,7 @@ function App() {
 
     </Routes>
     </BrowserRouter>
+    </AuthProvider>
   );
 }
 

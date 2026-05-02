@@ -1,38 +1,51 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../services/authService";
+import { useAuth } from "../components/AuthContext";
 
-export default function SignIn() {
+export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
 
     try {
-      const data = await loginUser(email, password);
+      const res = await fetch("http://localhost:5000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-      localStorage.setItem("token", data.token);
+      const data = await res.json();
 
-      alert("Logged in!");
-      navigate("/profile");
+      if (!res.ok) {
+        alert("Login failed");
+        return;
+      }
+
+      login(data.token); // ✅ store token + set auth state
+
+      navigate("/profile"); // redirect after login
     } catch (err) {
-      alert(err.message);
+      alert("Something went wrong");
     }
   }
 
   return (
     <div className="login-container">
-      <h1>Sign In</h1>
+      <h1>Login</h1>
 
       <form onSubmit={handleSubmit} className="login-form">
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
 
         <input

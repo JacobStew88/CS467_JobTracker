@@ -1,33 +1,32 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../components/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
-
   function handleLogout() {
-    localStorage.removeItem("token");
+    logout();
     navigate("/login");
   }
 
   return (
-    <div className="App">
-      <nav style={{ display: "flex", gap: "10px" }}>
-        <Link to="/">Home</Link>
-        <Link to="/about">About</Link>
+    <div className="navbar">
+    <nav className="nav-links">
+      <a href="/">Home</a>
 
-        {token ? (
-          <>
-            <Link to="/profile">Profile</Link>
-            <button onClick={handleLogout}>Logout</button>
-          </>
-        ) : (
-          <>
-            <Link to="/login">Login</Link>
-            <Link to="/signup">Sign Up</Link>
-          </>
-        )}
-      </nav>
+      {user ? (
+        <>
+          <a href="/profile">Profile</a>
+          <button onClick={handleLogout}>Logout</button>
+        </>
+      ) : (
+        <>
+          <a href="/login">Login</a>
+          <a href="/signup">Sign Up</a>
+        </>
+      )}
+    </nav>
     </div>
   );
 }
