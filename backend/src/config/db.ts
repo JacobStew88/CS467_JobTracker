@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+console.log("DATABASE_URL:", process.env.DATABASE_URL);
+
 // mysql2 can parse your DATABASE_URL string directly
 export const pool = mysql.createPool({
   uri: process.env.DATABASE_URL,
