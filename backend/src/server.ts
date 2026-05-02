@@ -2,6 +2,8 @@ import express, { Application, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import authRouter from './routes/authRoutes';
+import jobRouter from './routes/jobRoutes';
+import { requireAuth } from './middleware/passport';
 
 // Enviroment Variables
 dotenv.config();
@@ -14,7 +16,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ROUTES
-app.use('/auth', authRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/jobs', requireAuth, jobRouter);
 
 
 // Test Route
