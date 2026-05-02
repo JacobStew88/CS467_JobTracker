@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { loginUser } from "../services/authService";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -7,15 +8,18 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    // fake login check (replace later with backend)
-    if (email && password) {
+    try {
+      const data = await loginUser(email, password);
+
+      localStorage.setItem("token", data.token);
+
       alert("Logged in!");
-      navigate("/");
-    } else {
-      alert("Please fill in all fields");
+      navigate("/profile");
+    } catch (err) {
+      alert(err.message);
     }
   }
 
