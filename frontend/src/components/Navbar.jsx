@@ -1,5 +1,5 @@
 import { useAuth } from "../components/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -13,17 +13,20 @@ export default function Navbar() {
   return (
     <div className="navbar">
     <nav className="nav-links">
-      <a href="/">Home</a>
+      <Link to="/">Home</Link>
 
       {user ? (
         <>
-          <a href="/profile">Profile</a>
+          <Link to="/profile">Profile</Link>
+          <Link to="/jobs">Jobs</Link>
+          <Link to="/add-job">Add Job</Link>
           <button onClick={handleLogout}>Logout</button>
         </>
       ) : (
         <>
-          <a href="/login">Login</a>
-          <a href="/signup">Sign Up</a>
+          <Link to="/login">Login</Link>
+          <Link to="/signup">Sign Up</Link>
+
         </>
       )}
     </nav>

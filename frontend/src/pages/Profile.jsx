@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { getProtected } from "../services/authService";
+import { createJob } from "../services/jobService";
 
 export default function Profile() {
   const [user, setUser] = useState(null);

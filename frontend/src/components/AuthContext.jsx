@@ -1,28 +1,21 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(
+    localStorage.getItem("token") ? { token: localStorage.getItem("token") } : null
+  );
 
-  //auto-login on refresh
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      setUser({ token }); // later: decode JWT if you want username
-    }
-  }, []);
-
-  const login = (token) => {
+  function login(token) {
     localStorage.setItem("token", token);
     setUser({ token });
-  };
+  }
 
-  const logout = () => {
+  function logout() {
     localStorage.removeItem("token");
     setUser(null);
-  };
+  }
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
@@ -31,4 +24,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export function useAuth() {
+  return useContext(AuthContext);
+}
