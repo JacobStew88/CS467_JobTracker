@@ -6,19 +6,51 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp'
 import Profile from "./pages/Profile"
 import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./components/AuthContext";
+import Jobs from "./pages/Jobs";
+import AddJob from "./pages/AddJob";
 
 function App() {
   return (
+    <AuthProvider>
     <BrowserRouter>
     <Navbar />
     <Routes>
+      {/* PUBLIC ROUTE */}
       <Route path="/" element={<Home />} />
       <Route path="/about" element={<About />} />
       <Route path="/login" element={<Login/>} />
       <Route path="/signup" element={<SignUp/>} />
-      <Route path="/profile" element={<Profile/>} />
+     
+      {/* PROTECTED ROUTES */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/jobs"
+        element={
+          <ProtectedRoute>
+            <Jobs />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/add-job"
+        element={
+          <ProtectedRoute>
+            <AddJob />
+          </ProtectedRoute>
+        }
+      />       
     </Routes>
     </BrowserRouter>
+    </AuthProvider>
   );
 }
 

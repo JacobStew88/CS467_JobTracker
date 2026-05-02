@@ -2,19 +2,21 @@ import express, { Application, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import authRouter from './routes/authRoutes';
+import passport from 'passport';
 import jobRouter from './routes/jobRoutes';
 import { requireAuth } from './middleware/passport';
 import skillRouter from './routes/skillRoutes';
 
 // Enviroment Variables
 dotenv.config();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 const app: Application = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(passport.initialize());
 
 // ROUTES
 app.use('/api/auth', authRouter);

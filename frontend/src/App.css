@@ -1,5 +1,5 @@
 .App {
-  text-align: center;
+  text-align:center;
 }
 
 .header {
@@ -46,12 +46,17 @@
   transform: translateY(-1px);
 }
 
+/* login and account creation container */
 .login-container {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
+  background-color: #282c34;
+  color: white;
+  font-size: calc(10px + 2vmin);
+  padding-top: 80px;
 }
 
 .login-form {
@@ -78,4 +83,63 @@
 
 .login-form button:hover {
   background: #1d4ed8;
+}
+
+
+/* Navbar container */
+.navbar {
+  width: 100%;
+  background-color: #ffffff;
+  padding: 8px 30px;
+  border-bottom: 1px solid #e5e7eb;
+
+}
+
+/* Flex layout */
+.nav-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  
+}
+
+/* Links + button base style */
+.nav-links a,
+.nav-button {
+  position: relative;
+  font-size: 18px;
+  color: #111827;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 0;
+  font-weight: 500;
+  font-size: x-large;
+}
+
+/* Hover underline animation */
+.nav-links a::after,
+.nav-button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0%;
+  height: 2px;
+  background-color: #2563eb;
+  transition: width 0.3s ease;
+}
+
+/* On hover */
+.nav-links a:hover::after,
+.nav-button:hover::after {
+  width: 100%;
+}
+
+/* Hover color */
+.nav-links a:hover,
+.nav-button:hover {
+  color: #2563eb;
 }
