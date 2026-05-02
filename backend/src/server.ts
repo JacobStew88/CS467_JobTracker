@@ -3,8 +3,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import authRouter from './routes/authRoutes';
 import passport from 'passport';
+import jobRouter from './routes/jobRoutes';
 import { requireAuth } from './middleware/passport';
-
+import skillRouter from './routes/skillRoutes';
 
 // Enviroment Variables
 dotenv.config();
@@ -18,10 +19,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 
 // ROUTES
-app.use('/auth', authRouter);
-app.get('/protected', requireAuth, (req: Request, res: Response) => {
-  res.json({ message: "You are authenticated 🎉" });
-});
+app.use('/api/auth', authRouter);
+app.use('/api/jobs', requireAuth, jobRouter);
+app.use('/api/skills', requireAuth, skillRouter);
 
 // Test Route
 app.get('/', (req: Request, res: Response) => {

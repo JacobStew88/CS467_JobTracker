@@ -25,10 +25,10 @@ export const createSkill = async (skill: NewSkill): Promise<Skill> => {
 }
 
 // Get all skills for a user
-export const getSkills = async (user_id: Skill['user_id']): Promise<Skill[]> => {
+export const getSkills = async (user_id: Skill['user_id'], limit: number = 10, offset: number = 0): Promise<Skill[]> => {
     const [content] = await pool.query<Skill[]>(
-        `SELECT * FROM ${SKILLSTABLE} WHERE user_id = ?`,
-        [user_id]
+        `SELECT * FROM ${SKILLSTABLE} WHERE user_id = ? LIMIT ? OFFSET ?`,
+        [user_id, limit, offset]
     );
     return content
 }
@@ -80,12 +80,12 @@ export const removeSkillFromJob = async(job_id: number, skill_id: Skill['skill_i
 }
 
 // Get all skills from a specific job
-export const getSkillsFromJob = async(job_id: number): Promise<Skill[]> => {
+export const getSkillsFromJob = async(job_id: number, limit: number = 10, offset: number = 0): Promise<Skill[]> => {
     const [content] = await pool.query<Skill[]>(
         `SELECT s.* FROM ${SKILLSTABLE} s
         JOIN ${JOBSKILLSTABLE} js ON s.skill_id = js.skill_id
-        WHERE js.job_id = ?`,
-        [job_id]
+        WHERE js.job_id = ? LIMIT ? OFFSET ?`,
+        [job_id, limit, offset]
     );
     return content;
 }

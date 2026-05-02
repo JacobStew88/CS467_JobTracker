@@ -1,13 +1,20 @@
 import { pool } from "../config/db";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
+export const JOB_STATUSES = ["applied", "waiting", "interviewed", "decision"] as const;
+export type JobStatus = (typeof JOB_STATUSES)[number];
+
+export function isJobStatus(value: string): value is JobStatus {
+  return (JOB_STATUSES as readonly string[]).includes(value);
+}
+
 // Job interface
 export interface Job extends RowDataPacket {
   job_id: number; // PK
   user_id: number; // FK
   company_name: string;
   job_title: string;
-  status: "applied" | "waiting to hear back" | "interviewed" | "decision";
+  status: JobStatus;
   application_date: Date;
 }
 
@@ -25,10 +32,10 @@ export const createJob = async (job: NewJob): Promise<Job> => {
 };
 
 // Get all jobs for a user
-export const getJobs = async (user_id: Job["user_id"]): Promise<Job[]> => {
+export const getJobs = async (user_id: Job["user_id"], limit: number = 10, offset: number = 0): Promise<Job[]> => {
   const [content] = await pool.query<Job[]>(
-    `SELECT * FROM ${JOBSTABLE} WHERE user_id = ?`,
-    [user_id]
+      `SELECT * FROM ${JOBSTABLE} WHERE user_id = ? LIMIT ? OFFSET ?`,
+      [user_id, limit, offset]
     );
     return content;
 };

@@ -1,46 +1,155 @@
 import { Request, Response } from 'express';
-import { Job, NewJob, createJob, getJobById, updateJob, deleteJob } from '../models/jobModel';
+import { Job, NewJob, createJob, getJobById, updateJob, deleteJob, getJobs, isJobStatus } from '../models/jobModel';
 import { JWTUserPayload } from '../types/auth';
+import { withErrorHandling } from './controllerWrapper';
 
-const ERROR_SERVER = {error: "Server Error"}
+const MAX_LIMIT = 50;
+const DEFAULT_LIMIT = 10;
+const DEFAULT_OFFSET = 0;
 
-export const createJobController = async (req: Request, res: Response): Promise<void> => {
+type CreateJobInput = Omit<NewJob, 'user_id'>;
+
+type ValidationResult = 
+  | { ok: false; error: string }
+  | { ok: true; data: CreateJobInput};
+
+const validateJobBody = (req: Request): ValidationResult => {
+    const { company_name, job_title, status, application_date } = req.body;
+    if (!company_name || typeof company_name !== 'string') return { ok: false, error: "Missing or invalid company name" };
+    if (!job_title || typeof job_title !== 'string') return { ok: false, error: "Missing or invalid job title" };
+    if (!status || !isJobStatus(status)) return { ok: false, error: "Missing or invalid status" };
+    if (!application_date || !validateDate(application_date)) return { ok: false, error: "Missing or invalid date" };
+
+    return { 
+        ok: true, 
+        data: {
+        company_name,
+        job_title,
+        status,
+        application_date: new Date(application_date)
+    } as CreateJobInput }
+};
+
+const validateDate = (date: string): boolean => {
+    const parsedDate = new Date(date);
+    return !isNaN(parsedDate.getTime());
+}
+
+const validateLimitAndOffsetRangeValues = (limit: number, offset: number): boolean => {
+    return limit >= 1 && offset >= 0 && limit <= MAX_LIMIT;
+}
+
+export const createJobController = withErrorHandling(async (req: Request, res: Response): Promise<void> => {
     // Getting payload from the token via passport middleware
     const payload = req.user as JWTUserPayload;
     const userid = payload.user_id;
 
-    // Request body from user
-    const { company_name, job_title, status, application_date } = req.body;
-
-    // Validation
-    if (!company_name || !job_title || !status || !application_date) {
-        res.status(400).json({ error: "Missing required fields" });
+    const validJobBody = validateJobBody(req);
+    if (!validJobBody.ok) {
+        res.status(400).json(validJobBody.error);
         return;
     }
-    const validStatuses = ["applied", "waiting to hear back", "interviewed", "decision"];
-    if (!validStatuses.includes(status)) {
-        res.status(400).json({ error: "Invalid status value" });
-        return;
-    }
-    const parsedDate = new Date(application_date);
-    if (isNaN(parsedDate.getTime())) {
-        res.status(400).json({ error: "Invalid application_date format" });
-        return;
-    }
-
     // Create the job
-    try {
-        const job: Job = await createJob({
+    const job: Job = await createJob({
         user_id: userid,
-        company_name: company_name,
-        job_title: job_title,
-        status: status,
-        application_date: parsedDate
+        company_name: validJobBody.data.company_name,
+        job_title: validJobBody.data.job_title,
+        status: validJobBody.data.status,
+        application_date: validJobBody.data.application_date
     } as NewJob);
-        res.status(201).json(job);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json(ERROR_SERVER);
-    }
-};
+    res.status(201).json(job);
+});
 
+export const getJobsController = withErrorHandling(async (req: Request, res: Response): Promise<void> => {
+    const payload = req.user as JWTUserPayload;
+    const userid = payload.user_id;
+    // If limit and offset are not numbers, it will set to the default values
+    const parsedLimit = parseInt(req.query.limit as string, 10);
+    const parsedOffset = parseInt(req.query.offset as string, 10);
+    const limit = parsedLimit || DEFAULT_LIMIT;
+    const offset = parsedOffset || DEFAULT_OFFSET;
+    // Validate the limit and offset
+    const validLimitAndOffset = validateLimitAndOffsetRangeValues(limit, offset);
+    if (!validLimitAndOffset) {
+        res.status(400).json({ error: "Invalid limit or offset parameters"});
+        return;
+    }
+    // Get the jobs
+    const jobs: Job[] = await getJobs(userid, limit, offset);
+    res.status(200).json(jobs);
+});
+
+export const getJobByIdController = withErrorHandling(async (req: Request, res: Response): Promise<void> => {
+    const payload = req.user as JWTUserPayload;
+    const userid = payload.user_id;
+    const jobid = parseInt(req.params.id as string, 10);
+
+    // Validate the job id
+    if (isNaN(jobid)) { res.status(400).json({ error: "Invalid job id" }); return; }
+
+    const job: Job | null = await getJobById(userid, jobid);
+    if (!job) {
+        res.status(404).json({ error: "Job not found" });
+        return;
+    }
+    res.status(200).json(job);
+});
+
+export const updateJobController = withErrorHandling(async (req: Request, res: Response): Promise<void> => {
+    const payload = req.user as JWTUserPayload;
+    const userid = payload.user_id;
+    const jobid = parseInt(req.params.id as string, 10);
+
+    // Validate the application date and job id
+    if (req.body.application_date && !validateDate(req.body.application_date)) {
+        res.status(400).json({ error: "Invalid date" });
+        return;
+    }
+    // Validate the job id
+    if (isNaN(jobid)) { res.status(400).json({ error: "Invalid job id" }); return; }
+    // Validate status
+    if (req.body.status && !isJobStatus(req.body.status)) {
+        res.status(400).json({ error: "Invalid status" });
+        return;
+    }
+    const existingJob: Job | null = await getJobById(userid, jobid);
+    if (!existingJob) {
+        res.status(404).json({ error: "Job not found" });
+        return;
+    }
+    const updatedJob = {
+        job_id: jobid,
+        user_id: userid,
+        company_name: req.body.company_name || existingJob.company_name,
+        job_title: req.body.job_title || existingJob.job_title,
+        status: req.body.status || existingJob.status,
+        application_date: req.body.application_date ? new Date(req.body.application_date) : existingJob.application_date
+    } as Job;
+    const success = await updateJob(updatedJob);
+    if (!success) {
+        res.status(500).json({ error: "Failed to update job" });
+        return;
+    }   
+    res.status(200).json(updatedJob);
+});
+
+export const deleteJobController = withErrorHandling(async (req: Request, res: Response): Promise<void> => {
+    const payload = req.user as JWTUserPayload;
+    const userid = payload.user_id;
+    const jobid = parseInt(req.params.id as string, 10);
+
+    // Validate the job id
+    if (isNaN(jobid)) { res.status(400).json({ error: "Invalid job id" }); return; }
+
+    const existingJob: Job | null = await getJobById(userid, jobid);
+    if (!existingJob) {
+        res.status(404).json({ error: "Job not found" });
+        return;
+    }
+    const success = await deleteJob(userid, jobid);
+    if (!success) {
+        res.status(500).json({ error: "Failed to delete job" });
+        return;
+    }   
+    res.status(200).json({ message: "Job deleted successfully" });
+});
