@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <div className="body">
       <h1>This is the homepage</h1>
-      <div>
+      <div className="button-group">
       <Button onClick={() => navigate("/login")}>
         Sign in
       </Button>

@@ -23,7 +23,6 @@ export default function Navbar() {
         <>
           <Link to="/profile">Profile</Link>
           <Link to="/jobs">Jobs</Link>
-          <Link to="/add-job">Add Job</Link>
           <Button onClick={handleLogout}>Logout</Button>
         </>
       ) : (

@@ -9,7 +9,6 @@ import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./components/AuthContext";
 import Jobs from "./pages/Jobs";
-import AddJob from "./pages/AddJob";
 
 function App() {
   return (
@@ -25,8 +24,7 @@ function App() {
      
       {/* PROTECTED ROUTES */}
       <Route path="/profile" element={<ProtectedRoute> <Profile /></ProtectedRoute>} />
-      <Route path="/jobs" element={<ProtectedRoute> <Jobs /></ProtectedRoute>} />
-      <Route path="/add-job" element={<ProtectedRoute> <AddJob /></ProtectedRoute>} />   
+      <Route path="/jobs" element={<ProtectedRoute> <Jobs /></ProtectedRoute>} />  
     </Routes>
     </BrowserRouter>
     </AuthProvider>

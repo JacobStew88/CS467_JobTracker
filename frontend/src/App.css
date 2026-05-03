@@ -1,9 +1,9 @@
 :root {
-  --bg: #282c34;
-  --primary: #2563eb;
+  --bg: #1c1d2d;
+  --primary: #001d5c;
   --text: #ffffff;
   --border: #e5e7eb;
-  --card: #1f2937;
+  --card: #053c2d;
 }
 
 .App {
@@ -29,15 +29,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; 
+  gap: 20px; 
   color: var(--text);
   padding: 20px;
 }
 
 .button-group{
   display: flex;
-  flex-direction: column;
   gap: 10px;
+  align-items: center;
 }
 
 .button {
@@ -56,26 +57,32 @@
   opacity: 0.9;
 }
 
-/* login and account creation container */
-.login-container {
+.form-container {
   height: 100vh;
+  padding-top: 10%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
   align-items: center;
   background: var(--bg);
   color: var(--text);
 }
 
-.login-form input {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.2);
-  background: var(--card);
-  color: var(--text);
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
 }
 
-.login-form input::placeholder {
-  color: rgba(255,255,255,0.5);
+.form button {
+  margin-top: 8px;
+}
+
+.form input,
+.form select {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .navbar {
@@ -107,7 +114,6 @@
   transition: color 0.2s ease;
 }
 
-/* Hover underline animation */
 .nav-links a::after,
 .nav-button::after {
   content: "";
@@ -120,18 +126,15 @@
   transition: width 0.3s ease;
 }
 
-/* On hover */
 .nav-links a:hover::after,
 .nav-button:hover::after {
   width: 100%;
 }
 
-/* Hover color */
 .nav-links a:hover,
 .nav-button:hover {
   color: var(--primary);
 }
-
 
 .card {
   background: var(--card);
@@ -163,10 +166,80 @@
 }
 
 .input::placeholder {
-  color: rgba(255,255,255,0.5);
+  color: var(--text);
 }
 
 .input:focus {
   outline: 1px solid var(--primary);
 }
 
+.input-label {
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.7);
+}
+
+.table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* hover effect */
+.table tr:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.status {
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-applied {
+  color: #60a5fa;
+}
+
+.status-waiting {
+  color: #facc15;
+}
+
+.status-interviewed {
+  color: #34d399;
+}
+
+.status-decision {
+  color: #f87171;
+}
+
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.popup {
+  background: var(--card);
+  color: var(--text);
+  padding: 24px;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
