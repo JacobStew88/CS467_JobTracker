@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createAccount } from "../services/authService";
 import { useAuth } from "../components/AuthContext";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import Input from "../components/Input";
 
 export default function AccountCreation() {
   const navigate = useNavigate();
@@ -31,32 +34,33 @@ export default function AccountCreation() {
   return (
     <div className="login-container">
       <h1>Account Creation</h1>
+      <Card>
+      <form onSubmit={handleSubmit}>
 
-      <form onSubmit={handleSubmit} className="login-form">
-
-        <input
+        <Input
           type="text"
           placeholder="Enter Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
 
-        <input
+        <Input
           type="email"
           placeholder="Enter Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        <input
+        <Input
           type="password"
           placeholder="Enter Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button type="submit">Create Account</button>
+        <Button type="submit">Create Account</Button>
       </form>
+      </Card>
     </div>
   );
 }

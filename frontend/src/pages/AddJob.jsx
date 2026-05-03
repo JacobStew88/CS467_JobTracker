@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createJob } from "../services/jobService";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import Input from "../components/Input";
 
 export default function AddJob() {
   const navigate = useNavigate();
@@ -35,17 +38,18 @@ export default function AddJob() {
 
   return (
     <div className="body">
+      <div className="form-container">
       <h1>Add Job</h1>
 
-      <form onSubmit={handleSubmit}>
-        <input
+      <form onSubmit={handleSubmit} className="job-form">
+        <Input
           name="company_name"
           placeholder="Company"
           value={form.company_name}
           onChange={handleChange}
         />
 
-        <input
+        <Input
           name="job_title"
           placeholder="Job Title"
           value={form.job_title}
@@ -59,15 +63,16 @@ export default function AddJob() {
           <option value="decision">Decision</option>
         </select>
 
-        <input
+        <Input
           type="date"
           name="application_date"
           value={form.application_date}
           onChange={handleChange}
         />
 
-        <button type="submit">Create Job</button>
+        <Button type="submit">Create Job</Button>
       </form>
+      </div>
     </div>
   );
 }

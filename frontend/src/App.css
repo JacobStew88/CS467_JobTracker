@@ -1,3 +1,11 @@
+:root {
+  --bg: #282c34;
+  --primary: #2563eb;
+  --text: #ffffff;
+  --border: #e5e7eb;
+  --card: #1f2937;
+}
+
 .App {
   text-align:center;
 }
@@ -7,21 +15,23 @@
   position: fixed;
   top: 0;
   left: 0;
-  background-color: #282c34;
+  background: var(--card);
   padding: 15px;
   text-align: center;
   z-index: 1000;
+  color: var(--text);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 .body {
-  background-color: #282c34;
+  background-color: var(--bg);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  color: var(--text);
+  padding: 20px;
 }
 
 .button-group{
@@ -31,92 +41,70 @@
 }
 
 .button {
-  background-color: #3f4502;
+  background-color: var(--primary);
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 16px;
   border-radius: 8px;
-  font-size: 18px;
   cursor: pointer;
   transition: 0.2s ease;
+  font-weight: 500;
 }
 
-.button:hover{
-  background-color: #1d4ed8;
+.button:hover {
   transform: translateY(-1px);
+  opacity: 0.9;
 }
 
 /* login and account creation container */
 .login-container {
   height: 100vh;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  background-color: #282c34;
-  color: white;
-  font-size: calc(10px + 2vmin);
-  padding-top: 80px;
-}
-
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 250px;
+  background: var(--bg);
+  color: var(--text);
 }
 
 .login-form input {
   padding: 10px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: var(--card);
+  color: var(--text);
 }
 
-.login-form button {
-  padding: 10px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+.login-form input::placeholder {
+  color: rgba(255,255,255,0.5);
 }
 
-.login-form button:hover {
-  background: #1d4ed8;
-}
-
-
-/* Navbar container */
 .navbar {
   width: 100%;
-  background-color: #ffffff;
-  padding: 8px 30px;
-  border-bottom: 1px solid #e5e7eb;
-
+  background: var(--card);
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-/* Flex layout */
 .nav-links {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 30px;
-  
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-/* Links + button base style */
 .nav-links a,
 .nav-button {
   position: relative;
   font-size: 18px;
-  color: #111827;
+  font-weight: 500;
+  color: var(--text);
   text-decoration: none;
-  background: none;
-  border: none;
   cursor: pointer;
   padding: 5px 0;
-  font-weight: 500;
-  font-size: x-large;
+  transition: color 0.2s ease;
 }
 
 /* Hover underline animation */
@@ -128,7 +116,7 @@
   bottom: -2px;
   width: 0%;
   height: 2px;
-  background-color: #2563eb;
+  background: var(--primary);
   transition: width 0.3s ease;
 }
 
@@ -141,5 +129,44 @@
 /* Hover color */
 .nav-links a:hover,
 .nav-button:hover {
-  color: #2563eb;
+  color: var(--primary);
 }
+
+
+.card {
+  background: var(--card);
+  color: var(--text);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: var(--card);
+  color: var(--text);
+}
+
+.input::placeholder {
+  color: rgba(255,255,255,0.5);
+}
+
+.input:focus {
+  outline: 1px solid var(--primary);
+}
+

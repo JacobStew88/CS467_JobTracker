@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getJobs, updateJob } from "../services/jobService";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import Input from "../components/Input";
 
 export default function EditJob() {
   const { id } = useParams();
@@ -69,14 +72,15 @@ export default function EditJob() {
     <div className="body">
       <h1>Edit Job</h1>
 
+      <Card>
       <form onSubmit={handleSubmit}>
-        <input
+        <Input
           name="company_name"
           value={form.company_name}
           onChange={handleChange}
         />
 
-        <input
+        <Input
           name="job_title"
           value={form.job_title}
           onChange={handleChange}
@@ -89,15 +93,16 @@ export default function EditJob() {
             <option value="decision">Decision</option>
         </select>
 
-        <input
+        <Input
           type="date"
           name="application_date"
           value={form.application_date}
           onChange={handleChange}
         />
 
-        <button type="submit">Save Changes</button>
+        <Button type="submit">Save Changes</Button>
       </form>
+      </Card>
     </div>
   );
 }

@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { getJobs, deleteJob } from "../services/jobService";
 import { Link } from "react-router-dom";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import Input from "../components/Input";
 
 export default function Jobs() {
   const [jobs, setJobs] = useState([]);
@@ -30,24 +33,24 @@ export default function Jobs() {
   return (
     <div className="body">
       <h1>My Jobs</h1>
-
       <Link to="/add-job">+ Add Job</Link>
-
+      <Card>
       {jobs.length === 0 ? (
         <p>No jobs yet</p>
       ) : (
         jobs.map((job) => (
-          <div key={job.job_id} style={{ border: "1px solid gray", margin: 10 }}>
+          <div key={job.job_id}>
             <h3>{job.company_name}</h3>
             <p>{job.job_title}</p>
             <p>{job.status}</p>
 
-            <button onClick={() => handleDelete(job.job_id)}>
+            <Button onClick={() => handleDelete(job.job_id)}>
               Delete
-            </button>
+            </Button>
           </div>
         ))
       )}
+      </Card>
     </div>
   );
 }

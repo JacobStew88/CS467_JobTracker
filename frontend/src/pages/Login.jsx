@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import Input from "../components/Input";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -41,21 +44,21 @@ export default function Login() {
       <h1>Login</h1>
 
       <form onSubmit={handleSubmit} className="login-form">
-        <input
+        <Input
           type="text"
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
 
-        <input
+        <Input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button type="submit">Login</button>
+        <Button type="submit">Login</Button>
       </form>
     </div>
   );

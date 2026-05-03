@@ -2,48 +2,66 @@ import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { getProtected } from "../services/authService";
 import { createJob } from "../services/jobService";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import Input from "../components/Input";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(null);
+  const [profile, setProfile] = useState({
+  bio: "",
+  avatar: null,
+  jobsApplied: 0,
+});
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
 
-    if (token) {
-      const decoded = jwtDecode(token);
-      setUser(decoded);
+useEffect(() => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    const decoded = jwtDecode(token);
+    console.log("DECODED JWT:", decoded);
+    setUser(decoded);
+  }
+
+  async function loadProtected() {
+    try {
+      const data = await getProtected();
+      console.log("PROTECTED DATA:", data);
+      setProfile({
+        bio: "This is my bio...",
+        avatar: "https://i.pravatar.cc/150",
+        jobsApplied: `${data.length}`
+      });
+
+      setMessage(`Jobs loaded: ${data.length}`);
+    } catch (err) {
+      setMessage(err.message);
     }
+  }
 
-    async function loadProtected() {
-      try {
-        const data = await getProtected();
-        setMessage(data.message);
-      } catch (err) {
-        setMessage(err.message);
-      }
-    }
-
-    loadProtected();
-  }, []);
+  loadProtected();
+}, []);
 
   return (
-    <div className="body">
-      <h1>Dashboard</h1>
+<div className="body">
+  <h1>Dashboard</h1>
+  <Card>
+  <div>
+    {/* Profile Picture */}
+    <img src={profile.avatar} className="profile-avatar"/>
 
-      {user ? (
-        <div>
-          <h2>Welcome, {user.email}</h2>
-          <p>User is logged in</p>
-        </div>
-      ) : (
-        <p>No user data found</p>
-      )}
+    {/* Username */}
+    <h2>Welcome, User #{user?.user_id}</h2>
 
-      <hr />
+    {/* Bio */}
+    <p><strong>Bio:</strong> {profile.bio || "No bio yet"}</p>
 
-      <h3>Backend Status</h3>
-      <p>{message}</p>
-    </div>
+    {/* Jobs applied */}
+    <p><strong>Jobs Applied:</strong> {profile.jobsApplied}</p>
+  </div>
+  </Card>
+</div>
   );
 }
