@@ -10,6 +10,7 @@ import {
 } from '../models/userModel';
 import { JWTUserPayload } from '../types/auth';
 import { withErrorHandling } from './controllerWrapper';
+import validator from 'validator';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'DEVELOPMENT_FALL_BACK_KEY';
 
@@ -51,6 +52,19 @@ export const userCreateAccount = withErrorHandling(async (req: Request, res: Res
     // getUserbyUsername
     const existingUsername: User | null = await getUserByUsername(username); 
     if (existingUsername) { res.status(401).json(ERROR_INVALID_CRED); return} // User exist alr
+
+    if (!validator.isEmail(email)) {
+        res.status(400).json({ error: "Invalid email" });
+        return;
+    }
+    if (!validator.isLength(username, { min: 3, max: 20 })) {
+        res.status(400).json({ error: "Username must be between 3 and 20 characters" });
+        return;
+    }
+    if (!validator.isStrongPassword(password)) {
+        res.status(400).json({ error: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character" });
+        return;
+    }
 
     // Salt and hash the password
     const salt = await bcrypt.genSalt();
