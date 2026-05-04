@@ -128,10 +128,10 @@ export default function Jobs() {
 
   function formatDate(date) {
     if (!date) return "—";
-    return new Date(date).toLocaleDateString();
+    const [year, month, day] = date.slice(0, 10).split("-");
+    return `${month}/${day}/${year}`;
   }
 
- 
   // RENDER
   return (
     <div className="body">
@@ -168,6 +168,7 @@ export default function Jobs() {
                     <Button onClick={() => handleDelete(job.job_id)}>
                       Delete
                     </Button>
+                    {console.log(job.application_date)}
                     </div>
                   </td>
                 </tr>
