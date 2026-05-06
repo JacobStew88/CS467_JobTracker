@@ -5,6 +5,8 @@ import Button from "../components/Button";
 import Card from "../components/Card";
 import Input from "../components/Input";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -16,7 +18,7 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
