@@ -1,36 +1,40 @@
 :root {
-  --bg: #1c1d2d;
-  --primary: #001d5c;
+  --bg: #0d1f53;
+  --primary: #180f9e;
   --text: #ffffff;
   --border: #e5e7eb;
-  --card: #053c2d;
+  --card: #053c2d; /*use this color for the buttons, tiny highlights */
+  --shadeTop: #b7c4eb;
+  --greenBottom: #053c2d;
+  /* Top stays shaded until 50%, then fades into green */
+  --site-bg: linear-gradient(
+    to bottom,
+    var(--shadeTop) 0,
+    var(--shadeTop) 20vh,
+  #7bc1e9 35vh,   /* richer blue bridge */
+  #458cb6 50vh,   /* your example-style blue/teal */
+  #1d635d 75vh,   /* deep teal bridge */
+    var(--greenBottom) 100vh
+  );
 }
 
-.App {
-  text-align:center;
-}
-
-.header {
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background: var(--card);
-  padding: 15px;
-  text-align: center;
-  z-index: 1000;
+html, body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--site-bg);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--text);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 .body {
-  background-color: var(--bg);
+  background: transparent;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; 
-  gap: 20px; 
+  justify-content: flex-start;
+  gap: 20px;
   color: var(--text);
   padding: 20px;
 }
@@ -58,13 +62,13 @@
 }
 
 .form-container {
+  background: transparent; /* let gradient show through */
   height: 100vh;
   padding-top: 10%;
   display: flex;
   flex-direction: column;
   gap: 12px;
   align-items: center;
-  background: var(--bg);
   color: var(--text);
 }
 
@@ -87,10 +91,16 @@
 
 .navbar {
   width: 100%;
-  background: var(--card);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: rgba(28, 29, 45, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   padding: 10px 20px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
 }
+
 
 .nav-links {
   display: flex;
@@ -136,6 +146,29 @@
   color: var(--primary);
 }
 
+.nav-inner {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+
+.brand-logo {
+  height: 28px;   /* tweak: 24–34 looks good */
+  width: auto;
+  display: block;
+}
+  
 .card {
   background: var(--card);
   color: var(--text);
@@ -243,3 +276,33 @@
   box-sizing: border-box;
   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
+
+.hero {
+  width: 100%;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 110px 20px 60px;
+  background: transparent; 
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-logo {
+  height: 300px;   
+  width: auto;
+  display: block;
+  margin: 0 auto 18px;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.35));
+}
+
+.hero-title {
+  margin: 0 0 10px 0;
+  font-size: clamp(30px, 4.2vw, 50px);
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.3px;
+  color: var(--text);
+}
+
