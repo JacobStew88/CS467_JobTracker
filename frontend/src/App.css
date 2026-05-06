@@ -83,7 +83,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 10%;
+  width: 20%;
 }
 
 .form button {
