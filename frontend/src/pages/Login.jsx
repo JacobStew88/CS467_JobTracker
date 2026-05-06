@@ -43,7 +43,7 @@ export default function Login() {
     <div className="form-container">
       <h1>Login</h1>
 
-      <form onSubmit={handleSubmit} className="form">
+      <form onSubmit={handleSubmit} className="loginform ">
         <Input
           type="text"
           placeholder="Username"
