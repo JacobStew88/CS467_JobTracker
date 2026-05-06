@@ -40,10 +40,10 @@ export default function Login() {
   }
 
   return (
-    <div className="login-container">
+    <div className="form-container">
       <h1>Login</h1>
 
-      <form onSubmit={handleSubmit} className="login-form">
+      <form onSubmit={handleSubmit} className="loginform ">
         <Input
           type="text"
           placeholder="Username"
@@ -57,8 +57,9 @@ export default function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-
+        <div className="button-group">
         <Button type="submit">Login</Button>
+        </div>
       </form>
     </div>
   );
