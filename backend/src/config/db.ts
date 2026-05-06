@@ -3,14 +3,25 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
+const databaseUrl = process.env.DATABASE_URL;
 
-// mysql2 can parse your DATABASE_URL string directly
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL is not defined');
+}
+
+const isAivenOrSslConnection =
+  databaseUrl.includes('aivencloud.com') || databaseUrl.includes('ssl-mode=REQUIRED');
+
 export const pool = mysql.createPool({
-  uri: process.env.DATABASE_URL,
+  uri: databaseUrl,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  ssl: isAivenOrSslConnection
+    ? {
+        rejectUnauthorized: false
+      }
+    : undefined
 });
 
 // Connection Test
