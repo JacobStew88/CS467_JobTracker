@@ -1,7 +1,7 @@
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt, StrategyOptions } from 'passport-jwt';
-import { getUserById } from '../models/userModel';
-import { JWTUserPayload } from '../types/auth';
+import { getUserById } from '../models/userModel.js';
+import { JWTUserPayload } from '../types/auth.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'DEVELOPMENT_FALL_BACK_KEY';
 

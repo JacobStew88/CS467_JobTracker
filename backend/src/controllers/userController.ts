@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { User, PublicUser, getUser, getUserById, updateUser, deleteUser } from '../models/userModel';
-import { JWTUserPayload } from '../types/auth';
-import { withErrorHandling } from './controllerWrapper';
+import { User, PublicUser, getUser, getUserById, updateUser, deleteUser } from '../models/userModel.js';
+import { JWTUserPayload } from '../types/auth.js';
+import { withErrorHandling } from './controllerWrapper.js';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 
@@ -22,31 +22,45 @@ export const updateUserController = withErrorHandling(async (req: Request, res: 
     const payload = req.user as JWTUserPayload;
     const userid = payload.user_id;
     const { username, email } = req.body;
-    if (!username && !email) {
-        res.status(400).json({ error: "Must provide at least one field to update"});
+
+    const updateData: Partial<PublicUser> = {};
+    if (username !== undefined) {
+        if (typeof username !== 'string') {
+            res.status(400).json({ error: "Invalid username format" });
+            return;
+        }
+        const trimmedUsername = username.trim();
+        if (!validator.isLength(trimmedUsername, { min: 3, max: 20 })) {
+            res.status(400).json({ error: "Username must be between 3 and 20 characters" });
+            return;
+        }
+        updateData.username = trimmedUsername;
+    }
+
+    if (email !== undefined) {
+        if (typeof email !== 'string') { res.status(400).json({ error: "Invalid email format" }); return; }
+        const trimmedEmail = email.trim().toLowerCase();
+        if (!validator.isEmail(trimmedEmail)) { res.status(400).json({ error: "Invalid email" }); return; }
+        updateData.email = trimmedEmail;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+        res.status(400).json({ error: "Must provide at least one valid field to update" });
         return;
     }
-    if (username && !validator.isLength(username, { min: 3, max: 20 })) {
-        res.status(400).json({ error: "Username must be between 3 and 20 characters"});
-        return;
-    }
-    if (email && !validator.isEmail(email)) {
-        res.status(400).json({ error: "Invalid email"});
-        return;
-    }
+
     const user: User | null = await getUserById(userid);
-    if (!user) {
-        res.status(404).json({ error: "User not found"});
-        return;
-    }
+    if (!user) { res.status(404).json({ error: "User not found" }); return; }
+
     const result = await updateUser({
-        user_id: userid,
-        username: username || user.username,
-        email: email || user.email,
-    } as PublicUser);
-    if (!result) { res.status(500).json({ error: "Failed to update user"}); return; }
-    res.status(200).json({message: "User updated successfully"});
-})
+        ...user,
+        ...updateData,
+    });
+
+    if (!result) { res.status(500).json({ error: "Failed to update user" }); return; }
+
+    res.status(200).json({ message: "User updated successfully" });
+});
 
 // Delete a user FRONTEND SHOULD ASK FOR PASSWORD TO CONFIRM + Have a are you sure? Confirmation
 export const deleteUserController = withErrorHandling(async (req: Request, res: Response): Promise<void> => {

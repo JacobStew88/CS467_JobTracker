@@ -1,12 +1,13 @@
 import express, { Application, Request, Response } from 'express';
-import { requireAuth } from './middleware/passport';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import authRouter from './routes/authRoutes';
 import passport from 'passport';
-import jobRouter from './routes/jobRoutes';
-import skillRouter from './routes/skillRoutes';
-import userRouter from './routes/userRoutes';
+import authRouter from './routes/authRoutes.js';
+import { requireAuth } from './middleware/passport.js';
+import jobRouter from './routes/jobRoutes.js';
+import skillRouter from './routes/skillRoutes.js';
+import userRouter from './routes/userRoutes.js';
+import contactRouter from './routes/contactRoutes.js';
 
 // Enviroment Variables
 dotenv.config();
@@ -24,12 +25,13 @@ app.use('/api/auth', authRouter);
 app.use('/api/jobs', requireAuth, jobRouter);
 app.use('/api/skills', requireAuth, skillRouter);
 app.use('/api/users', requireAuth, userRouter);
+app.use('/api/contacts', requireAuth, contactRouter);
 
 // Test Route
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, Backend API Working!');
 });
 
-app.listen(PORT, () => {
+app.listen(Number(PORT), '0.0.0.0', () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });

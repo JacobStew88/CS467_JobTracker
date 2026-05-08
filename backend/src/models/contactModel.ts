@@ -1,4 +1,4 @@
-import { pool } from "../config/db";
+import { pool } from "../config/db.js";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 // Contact interface
@@ -45,10 +45,10 @@ export const createContact = async (contact: NewContact): Promise<Contact> => {
 };
 
 // Get all contacts for a user
-export const getContacts = async (user_id: Contact["user_id"]): Promise<Contact[]> => {
+export const getContacts = async (user_id: Contact["user_id"], limit: number = 10, offset: number = 0): Promise<Contact[]> => {
   const [content] = await pool.query<Contact[]>(
-    `SELECT * FROM ${CONTACTSTABLE} WHERE user_id = ?`,
-    [user_id]
+    `SELECT * FROM ${CONTACTSTABLE} WHERE user_id = ? LIMIT ? OFFSET ?`,
+    [user_id, limit, offset]
   );
   return content;
 };
@@ -103,14 +103,14 @@ export const removeContactFromJob = async (job_id: number, contact_id: Contact["
 };
 
 // Get contacts from a specific job
-export const getContactsFromJob = async (job_id: number, user_id: number): Promise<JobContact[]> => {
+export const getContactsFromJob = async (job_id: number): Promise<JobContact[]> => {
   const [content] = await pool.query<JobContact[]>(
     `SELECT c.contact_id, c.user_id, c.first_name, c.last_name, c.email, c.phone, c.notes, jc.relationship_type
      FROM ${CONTACTSTABLE} c
      INNER JOIN ${JOBCONTACTSTABLE} jc ON c.contact_id = jc.contact_id
-     WHERE jc.job_id = ? AND c.user_id = ?`,
-    [job_id, user_id]
+     WHERE jc.job_id = ?`,
+    [job_id]
   );
 
   return content;
-};
+}
