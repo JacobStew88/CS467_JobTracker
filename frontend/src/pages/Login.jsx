@@ -5,6 +5,8 @@ import Button from "../components/Button";
 import Card from "../components/Card";
 import Input from "../components/Input";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -16,7 +18,7 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -40,10 +42,10 @@ export default function Login() {
   }
 
   return (
-    <div className="login-container">
+    <div className="form-container">
       <h1>Login</h1>
 
-      <form onSubmit={handleSubmit} className="login-form">
+      <form onSubmit={handleSubmit} className="loginform ">
         <Input
           type="text"
           placeholder="Username"
@@ -57,8 +59,9 @@ export default function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-
+        <div className="button-group">
         <Button type="submit">Login</Button>
+        </div>
       </form>
     </div>
   );

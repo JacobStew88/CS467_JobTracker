@@ -2,6 +2,9 @@
 -- CS467 Job Tracker Database Schema
 -- ============================================
 
+CREATE DATABASE IF NOT EXISTS jobtracker;
+USE defaultdb;
+
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS JobContacts;
@@ -128,3 +131,24 @@ CREATE TABLE JobContacts (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
+
+
+-- ============================================
+-- PasswordResetTokens
+-- Stores secure one-time password reset tokens
+-- ============================================
+CREATE TABLE PasswordResetTokens (
+    token_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token_hash VARCHAR(255) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    used_at DATETIME NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_password_reset_user
+        FOREIGN KEY (user_id)
+        REFERENCES Users(user_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+

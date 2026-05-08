@@ -1,43 +1,48 @@
 :root {
-  --bg: #282c34;
-  --primary: #2563eb;
+  --bg: #0d1f53;
+  --primary: #180f9e;
   --text: #ffffff;
   --border: #e5e7eb;
-  --card: #1f2937;
+  --card: #053c2d; /*use this color for the buttons, tiny highlights */
+  --shadeTop: #b7c4eb;
+  --greenBottom: #053c2d;
+  /* Top stays shaded until 50%, then fades into green */
+  --site-bg: linear-gradient(
+    to bottom,
+    var(--shadeTop) 0,
+    var(--shadeTop) 20vh,
+  #7bc1e9 35vh,   /* richer blue bridge */
+  #458cb6 50vh,   /* your example-style blue/teal */
+  #1d635d 75vh,   /* deep teal bridge */
+    var(--greenBottom) 100vh
+  );
 }
 
-.App {
-  text-align:center;
-}
-
-.header {
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background: var(--card);
-  padding: 15px;
-  text-align: center;
-  z-index: 1000;
+html, body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--site-bg);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--text);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 .body {
-  background-color: var(--bg);
+  background: transparent;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 20px;
   color: var(--text);
   padding: 20px;
 }
 
 .button-group{
   display: flex;
-  flex-direction: column;
   gap: 10px;
+  align-items: center;
 }
 
 .button {
@@ -56,31 +61,49 @@
   opacity: 0.9;
 }
 
-/* login and account creation container */
-.login-container {
+.form-container {
+  background: transparent; /* let gradient show through */
   height: 100vh;
+  padding-top: 10%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
   align-items: center;
-  background: var(--bg);
   color: var(--text);
 }
 
-.login-form input {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.2);
-  background: var(--card);
-  color: var(--text);
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
 }
 
-.login-form input::placeholder {
-  color: rgba(255,255,255,0.5);
+.loginform {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 20%;
+}
+
+.form button {
+  margin-top: 8px;
+}
+
+.form input,
+.form select {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .navbar {
   width: 100%;
-  background: var(--card);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: rgba(28, 29, 45, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   padding: 10px 20px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
 }
@@ -107,7 +130,6 @@
   transition: color 0.2s ease;
 }
 
-/* Hover underline animation */
 .nav-links a::after,
 .nav-button::after {
   content: "";
@@ -120,19 +142,39 @@
   transition: width 0.3s ease;
 }
 
-/* On hover */
 .nav-links a:hover::after,
 .nav-button:hover::after {
   width: 100%;
 }
 
-/* Hover color */
 .nav-links a:hover,
 .nav-button:hover {
   color: var(--primary);
 }
 
+.nav-inner {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
+.brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+
+.brand-logo {
+  height: 28px;   /* tweak: 24–34 looks good */
+  width: auto;
+  display: block;
+}
+  
 .card {
   background: var(--card);
   color: var(--text);
@@ -163,10 +205,110 @@
 }
 
 .input::placeholder {
-  color: rgba(255,255,255,0.5);
+  color: var(--text);
 }
 
 .input:focus {
   outline: 1px solid var(--primary);
+}
+
+.input-label {
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.7);
+}
+
+.table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* hover effect */
+.table tr:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.status {
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-applied {
+  color: #60a5fa;
+}
+
+.status-waiting {
+  color: #facc15;
+}
+
+.status-interviewed {
+  color: #34d399;
+}
+
+.status-decision {
+  color: #f87171;
+}
+
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.popup {
+  background: var(--card);
+  color: var(--text);
+  padding: 24px;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.hero {
+  width: 100%;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 110px 20px 60px;
+  background: transparent; 
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-logo {
+  height: 300px;   
+  width: auto;
+  display: block;
+  margin: 0 auto 18px;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.35));
+}
+
+.hero-title {
+  margin: 0 0 10px 0;
+  font-size: clamp(30px, 4.2vw, 50px);
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.3px;
+  color: var(--text);
 }
 

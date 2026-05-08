@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
-import Card from "../components/Card";
-import Input from "../components/Input";
+import Hero from "../components/Hero"; 
 
 export default function Home() {
   const navigate = useNavigate();
   return (
+    <>
+    <Hero />
     <div className="body">
-      <h1>This is the homepage</h1>
-      <div>
+      <div className="button-group">
       <Button onClick={() => navigate("/login")}>
         Sign in
       </Button>
@@ -18,5 +18,6 @@ export default function Home() {
       </Button>
       </div>
     </div>
+    </>
   );
 }
