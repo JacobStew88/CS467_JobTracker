@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { Job, NewJob, createJob, getJobById, updateJob, deleteJob, getJobs, isJobStatus } from '../models/jobModel';
-import { JWTUserPayload } from '../types/auth';
-import { withErrorHandling } from './controllerWrapper';
+import { Job, NewJob, createJob, getJobById, updateJob, deleteJob, getJobs, isJobStatus } from '../models/jobModel.js';
+import { JWTUserPayload } from '../types/auth.js';
+import { withErrorHandling } from './controllerWrapper.js';
 
 const MAX_LIMIT = 50;
 const DEFAULT_LIMIT = 10;
@@ -9,28 +9,57 @@ const DEFAULT_OFFSET = 0;
 
 type CreateJobInput = Omit<NewJob, 'user_id'>;
 
-type ValidationResult = 
+export type ValidationResult<T> = 
   | { ok: false; error: string }
-  | { ok: true; data: CreateJobInput};
+  | { ok: true; data: T };
 
-const validateJobBody = (req: Request): ValidationResult => {
+function validateJobBody(req: Request, isPartial: true): ValidationResult<Partial<CreateJobInput>>;
+function validateJobBody(req: Request, isPartial?: false): ValidationResult<CreateJobInput>;
+function validateJobBody(req: Request, isPartial: boolean = false): ValidationResult<Partial<CreateJobInput> | CreateJobInput> {
     const { company_name, job_title, status, application_date } = req.body;
-    if (!company_name || typeof company_name !== 'string') return { ok: false, error: "Missing or invalid company name" };
-    if (!job_title || typeof job_title !== 'string') return { ok: false, error: "Missing or invalid job title" };
-    if (!status || !isJobStatus(status)) return { ok: false, error: "Missing or invalid status" };
-    if (!application_date || !validateDate(application_date)) return { ok: false, error: "Missing or invalid date" };
-
+    
+    const data: Partial<CreateJobInput> = {};
+    if (!isPartial) {
+        if (company_name === undefined) return { ok: false, error: "Missing company name" };
+        if (job_title === undefined) return { ok: false, error: "Missing job title" };
+        if (status === undefined) return { ok: false, error: "Missing status" };
+        if (application_date === undefined) return { ok: false, error: "Missing application date" };
+    }
+    // --- Validate Company Name ---
+    if (company_name !== undefined) {
+        if (typeof company_name !== 'string') return { ok: false, error: "Invalid company name" };
+        if (company_name.trim() === '') return { ok: false, error: "Company name cannot be empty" };
+        data.company_name = company_name.trim();
+    }
+    // --- Validate Job Title ---
+    if (job_title !== undefined) {
+        if (typeof job_title !== 'string') return { ok: false, error: "Invalid job title" };
+        if (job_title.trim() === '') return { ok: false, error: "Job title cannot be empty" };
+        data.job_title = job_title.trim();
+    } 
+    // --- Validate Status ---
+    if (status !== undefined) {
+        if (!isJobStatus(status)) return { ok: false, error: "Invalid status" };
+        data.status = status;
+    }
+    // --- Validate Date ---
+    if (application_date !== undefined) {
+        if (!validateDate(application_date)) return { ok: false, error: "Invalid application date" };
+        data.application_date = new Date(application_date);
+    }
+    // Prevent empty partial updates
+    if (isPartial && Object.keys(data).length === 0) {
+        return { ok: false, error: "No valid fields provided for update" };
+    }
+    // Return the data (TypeScript handles the narrowing via overloads)
     return { 
         ok: true, 
-        data: {
-        company_name,
-        job_title,
-        status,
-        application_date: new Date(application_date)
-    } as CreateJobInput }
-};
+        data: isPartial ? data : (data as CreateJobInput) 
+    };
+}
 
-const validateDate = (date: string): boolean => {
+const validateDate = (date: any): boolean => {
+    if (typeof date !== 'string' || date.trim() === '') return false;
     const parsedDate = new Date(date);
     return !isNaN(parsedDate.getTime());
 }
@@ -44,19 +73,16 @@ export const createJobController = withErrorHandling(async (req: Request, res: R
     const payload = req.user as JWTUserPayload;
     const userid = payload.user_id;
 
-    const validJobBody = validateJobBody(req);
+    const validJobBody = validateJobBody(req, false);
     if (!validJobBody.ok) {
-        res.status(400).json(validJobBody.error);
+        res.status(400).json({ error: validJobBody.error });
         return;
     }
     // Create the job
     const job: Job = await createJob({
         user_id: userid,
-        company_name: validJobBody.data.company_name,
-        job_title: validJobBody.data.job_title,
-        status: validJobBody.data.status,
-        application_date: validJobBody.data.application_date
-    } as NewJob);
+        ...validJobBody.data
+    });
     res.status(201).json(job);
 });
 
@@ -100,36 +126,33 @@ export const updateJobController = withErrorHandling(async (req: Request, res: R
     const userid = payload.user_id;
     const jobid = parseInt(req.params.id as string, 10);
 
-    // Validate the application date and job id
-    if (req.body.application_date && !validateDate(req.body.application_date)) {
-        res.status(400).json({ error: "Invalid date" });
+    if (isNaN(jobid)) { 
+        res.status(400).json({ error: "Invalid job id" }); 
+        return; 
+    }
+
+    const validation = validateJobBody(req, true);
+    if (!validation.ok) {
+        res.status(400).json({ error: validation.error });
         return;
     }
-    // Validate the job id
-    if (isNaN(jobid)) { res.status(400).json({ error: "Invalid job id" }); return; }
-    // Validate status
-    if (req.body.status && !isJobStatus(req.body.status)) {
-        res.status(400).json({ error: "Invalid status" });
-        return;
-    }
+
     const existingJob: Job | null = await getJobById(userid, jobid);
     if (!existingJob) {
         res.status(404).json({ error: "Job not found" });
         return;
     }
-    const updatedJob = {
-        job_id: jobid,
-        user_id: userid,
-        company_name: req.body.company_name || existingJob.company_name,
-        job_title: req.body.job_title || existingJob.job_title,
-        status: req.body.status || existingJob.status,
-        application_date: req.body.application_date ? new Date(req.body.application_date) : existingJob.application_date
-    } as Job;
+
+    const updatedJob: Job = {
+        ...existingJob,
+        ...validation.data 
+    };
     const success = await updateJob(updatedJob);
     if (!success) {
         res.status(500).json({ error: "Failed to update job" });
         return;
     }   
+    
     res.status(200).json(updatedJob);
 });
 

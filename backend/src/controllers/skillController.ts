@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
-import { Skill, NewSkill, createSkill, getSkill, updateSkill, deleteSkill, getSkills, getSkillsFromJob, assignSkillToJob, removeSkillFromJob } from '../models/skillModel';
-import { JWTUserPayload } from '../types/auth';
-import { withErrorHandling } from './controllerWrapper';
-import { Job, getJobById } from '../models/jobModel';
+import { Skill, NewSkill, createSkill, getSkill, 
+         updateSkill, deleteSkill, getSkills, getSkillsFromJob, 
+         assignSkillToJob, removeSkillFromJob } from '../models/skillModel.js';
+import { JWTUserPayload } from '../types/auth.js';
+import { withErrorHandling } from './controllerWrapper.js';
+import { Job, getJobById } from '../models/jobModel.js';
 
 const MAX_LIMIT = 50;
 const DEFAULT_LIMIT = 10;
@@ -10,19 +12,45 @@ const DEFAULT_OFFSET = 0;
 
 type CreateSkillInput = Omit<NewSkill, 'user_id'>;
 
-type ValidationResult = 
+type ValidationResult<T> = 
   | { ok: false; error: string }
-  | { ok: true; data: CreateSkillInput};
+  | { ok: true; data: T};
 
 const validComfortLevel = (comfort_level: number): boolean => {
     return comfort_level >= 1 && comfort_level <= 5;
 }
 
-const validateSkillBody = (req: Request): ValidationResult => {
-    const { skillName, comfortLevel } = req.body;
-    if (!skillName || typeof skillName !== 'string') return { ok: false, error: "Missing or invalid skill name" };
-    if (!comfortLevel || isNaN(comfortLevel) || !validComfortLevel(comfortLevel)) return { ok: false, error: "Missing or invalid comfort level" };
-    return { ok: true, data: { skill_name: skillName, comfort_level: comfortLevel } };
+function validateSkillBody(req: Request, isPartial: true): ValidationResult<Partial<CreateSkillInput>>;
+function validateSkillBody(req: Request, isPartial?: false): ValidationResult<CreateSkillInput>;
+function validateSkillBody(req: Request, isPartial: boolean = false): ValidationResult<Partial<CreateSkillInput> | CreateSkillInput> {
+    const { skill_name, comfort_level } = req.body;
+
+    
+    const data: Partial<CreateSkillInput> = {};
+    if (!isPartial) {
+        if (skill_name === undefined) return { ok: false, error: "Missing skill name" };
+        if (comfort_level === undefined) return { ok: false, error: "Missing comfort level" };
+    }
+
+    if (skill_name !== undefined) {
+        if (typeof skill_name !== 'string') { return { ok: false, error: "Invalid skill name" }; }
+        if (skill_name.trim() === '') { return { ok: false, error: "Skill name cannot be empty" }; }
+        data.skill_name = skill_name.trim();
+    }
+    // Note: 0 is considered false in Javascript
+    if (comfort_level !== undefined) {
+        if (isNaN(comfort_level) || !validComfortLevel(comfort_level)) return { ok: false, error: "Invalid comfort level" };
+        data.comfort_level = comfort_level;
+    }
+
+    if (isPartial && Object.keys(data).length === 0) {
+        return { ok: false, error: "No valid fields provided for update" };
+    }
+
+    return {
+        ok: true,
+        data: isPartial ? data : (data as CreateSkillInput)
+    };
 }
 
 const validateLimitAndOffsetRangeValues = (limit: number, offset: number): boolean => {
@@ -56,7 +84,7 @@ export const createSkillController = withErrorHandling(async (req: Request, res:
     const payload = req.user as JWTUserPayload;
     const userid = payload.user_id;
 
-    const validSkillBody = validateSkillBody(req);
+    const validSkillBody = validateSkillBody(req, false);
     if (!validSkillBody.ok) {
         res.status(400).json({error: validSkillBody.error});
         return;
@@ -107,47 +135,27 @@ export const getSkillController = withErrorHandling(async (req: Request, res: Re
 });
 
 export const updateSkillController = withErrorHandling(async (req: Request, res: Response): Promise<void> => {
-    const payload = req.user as JWTUserPayload;
+const payload = req.user as JWTUserPayload;
     const userid = payload.user_id;
     const skillid = parseInt(req.params.id as string, 10);
 
-    // Validate the IDs
-    if (isNaN(userid)) { res.status(400).json({error: "Invalid user id"}); return; }
-    if (isNaN(skillid)) { res.status(400).json({error: "Invalid skill id"}); return; }
-    if (!req.body.skillName && !req.body.comfortLevel) {
-        res.status(400).json({ error: "Must provide at least one field to update" });
-        return;
-    }
+    if (isNaN(skillid)) { res.status(400).json({ error: "Invalid skill id" }); return; }
 
-    if (req.body.skillName && typeof req.body.skillName !== 'string') {
-        res.status(400).json({ error: "Invalid skill name" });
-        return;
-    }
-    if (req.body.comfortLevel && (isNaN(req.body.comfortLevel) || !validComfortLevel(req.body.comfortLevel))) {
-        res.status(400).json({ error: "Invalid comfort level" });
-        return;
-    }
+    const validation = validateSkillBody(req, true);
+    if (!validation.ok) { res.status(400).json({ error: validation.error }); return;}
 
     const existingSkill: Skill | null = await getSkill(userid, skillid);
-    if (!existingSkill) {
-        res.status(404).json({error: "Skill not found"});
-        return;
-    }
+    if (!existingSkill) { res.status(404).json({ error: "Skill not found" }); return; }
 
-    const updatedSkill = {
-        skill_id: skillid,
-        user_id: userid,
-        skill_name: req.body.skillName || existingSkill.skill_name,
-        comfort_level: req.body.comfortLevel || existingSkill.comfort_level,
-    } as Skill;
-
-    const result = await updateSkill(updatedSkill);
-    if (!result) {
-        res.status(500).json({error: "Failed to update skill"});
-        return;
-    }
+    const updatedSkill: Skill = {
+        ...existingSkill,
+        ...validation.data
+    };
     
-    res.status(200).json({message: "Skill updated successfully"});
+    const result = await updateSkill(updatedSkill);
+    if (!result) { res.status(500).json({ error: "Failed to update skill" }); return; }
+    
+    res.status(200).json(updatedSkill);
 });
 
 export const deleteSkillController = withErrorHandling(async (req: Request, res: Response): Promise<void> => {
@@ -203,12 +211,9 @@ export const removeSkillFromJobController = withErrorHandling(async (req: Reques
 });
 
 export const getSkillsFromJobController = withErrorHandling(async (req: Request, res: Response): Promise<void> => {
-    const payload = req.user as JWTUserPayload;
-    const userid = payload.user_id;
     const jobid = parseInt(req.params.jobid as string, 10);
 
     if (isNaN(jobid)) { res.status(400).json({error: "Invalid job id"}); return; }
-    if (isNaN(userid)) { res.status(400).json({error: "Invalid user id"}); return; }
 
     const parsedLimit = parseInt(req.query.limit as string, 10);
     const parsedOffset = parseInt(req.query.offset as string, 10);

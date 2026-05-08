@@ -21,7 +21,8 @@ import validator from 'validator';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'DEVELOPMENT_FALL_BACK_KEY';
 
-const ERROR_INVALID_CRED = {error: "Invalid Creditional"}
+const ERROR_INVALID_CRED = {error: "Invalid Credentials"}
+const ERROR_USER_EXIST = {error: "User already exist"}
 
 export const userLogin = withErrorHandling(async (req: Request, res: Response): Promise<void> => {
     const { username, password } = req.body;
@@ -31,13 +32,19 @@ export const userLogin = withErrorHandling(async (req: Request, res: Response): 
         return;
     }
 
+    // Clean the white spaces from the username and password
+    const cleanedusername = username.trim();
+    const cleanedPassword = password.trim();
+
     // getUserby Email from DB
-    const user: User | null  = await getUserByUsername(username);
+    const user: User | null  = await getUserByUsername(cleanedusername);  
     if (!user) { res.status(401).json(ERROR_INVALID_CRED); return} // User not found
 
+    console.log("Found User:", user);
+    
     // If found compare the password via bcrypt
-    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-    if (!isPasswordValid) { res.status(401).json(ERROR_INVALID_CRED); return}
+    const isPasswordValid = await bcrypt.compare(cleanedPassword, user.password_hash);
+    if (!isPasswordValid) { res.status(401).json(ERROR_INVALID_CRED); return} 
 
     // Create and the give the tocken back to the user
     const token = jwt.sign({ user_id: user.user_id } as JWTUserPayload, JWT_SECRET, { expiresIn: '24h' });
@@ -52,23 +59,27 @@ export const userCreateAccount = withErrorHandling(async (req: Request, res: Res
         return;
     }
 
+    const cleanedEmail = email.trim();
+    const cleanedUsername = username.trim();
+    const cleanedPassword = password.trim();
+
     // getUserbyEmail
-    const existingUserEmail: User | null = await getUserByEmail(email);
-    if (existingUserEmail) { res.status(401).json(ERROR_INVALID_CRED); return} // User exist alr
+    const existingUserEmail: User | null = await getUserByEmail(cleanedEmail); 
+    if (existingUserEmail) { res.status(401).json(ERROR_USER_EXIST); return} // User exist alr
 
     // getUserbyUsername
-    const existingUsername: User | null = await getUserByUsername(username);
-    if (existingUsername) { res.status(401).json(ERROR_INVALID_CRED); return} // User exist alr
+    const existingUsername: User | null = await getUserByUsername(cleanedUsername); 
+    if (existingUsername) { res.status(401).json(ERROR_USER_EXIST); return} // User exist alr
 
-    if (!validator.isEmail(email)) {
+    if (!validator.isEmail(cleanedEmail)) {
         res.status(400).json({ error: "Invalid email" });
         return;
     }
-    if (!validator.isLength(username, { min: 3, max: 20 })) {
+    if (!validator.isLength(cleanedUsername, { min: 3, max: 20 })) {
         res.status(400).json({ error: "Username must be between 3 and 20 characters" });
         return;
     }
-    if (!validator.isStrongPassword(password)) {
+    if (!validator.isStrongPassword(cleanedPassword)) {
         res.status(400).json({ error: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character" });
         return;
     }
@@ -77,12 +88,12 @@ export const userCreateAccount = withErrorHandling(async (req: Request, res: Res
 
     // Salt and hash the password
     const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(cleanedPassword, salt);
 
     // Create the new user and store in the DB
-    const newUserId: PublicUser['user_id'] = await createUser({
-        username: username,
-        email: email,
+    const newUserId: PublicUser['user_id'] = await createUser({ 
+        username: cleanedUsername,
+        email: cleanedEmail,
         password_hash: hashedPassword
     });
 

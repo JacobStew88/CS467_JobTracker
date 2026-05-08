@@ -1,4 +1,4 @@
-import { pool } from '../config/db';
+import { pool } from '../config/db.js';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 // User interfaces
