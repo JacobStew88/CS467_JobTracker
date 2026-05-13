@@ -9,14 +9,14 @@ import {
     getUserByUsername,
     createUser,
     updatePassword
-} from '../models/userModel';
+} from '../models/userModel.js';
 import {
     createPasswordResetToken,
     getPasswordResetToken,
     markPasswordResetTokenUsed
-} from '../models/passwordResetModel';
-import { JWTUserPayload } from '../types/auth';
-import { withErrorHandling } from './controllerWrapper';
+} from '../models/passwordResetModel.js';
+import { JWTUserPayload } from '../types/auth.js';
+import { withErrorHandling } from './controllerWrapper.js';
 import validator from 'validator';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'DEVELOPMENT_FALL_BACK_KEY';

@@ -10,8 +10,6 @@ const MAX_LIMIT = 50;
 const DEFAULT_LIMIT = 10;
 const DEFAULT_OFFSET = 0;
 
-type CreateContactInput = Omit<NewContact, 'user_id'>;
-
 type ValidationResult = 
   | { ok: false; error: string }
   | { ok: true; data: Partial<Contact> }; 

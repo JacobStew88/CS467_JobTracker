@@ -133,6 +133,8 @@ export const updateJobController = withErrorHandling(async (req: Request, res: R
 
     const validation = validateJobBody(req, true);
     if (!validation.ok) {
+        console.log("Validation Failed for PUT /jobs/:id ->", validation.error);
+        console.log("Incoming Body ->", req.body);
         res.status(400).json({ error: validation.error });
         return;
     }
