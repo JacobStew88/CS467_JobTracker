@@ -1,4 +1,4 @@
-import * as skillController from '../controllers/skillController';
+import * as skillController from '../controllers/skillController.js';
 import { Router } from 'express';
 
 const skillRouter = Router();

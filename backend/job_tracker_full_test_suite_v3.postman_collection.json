@@ -1,0 +1,3128 @@
+{
+  "info": {
+    "name": "Job Tracker - Full Test Suite",
+    "description": "Comprehensive E2E integration tests covering CRUD, validation, auth edge cases, relational mapping, and teardown. Run in order.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Auth \u2014 Registration",
+      "item": [
+        {
+          "name": "1.1 Register \u2014 Missing Fields",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 when fields are missing\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Response has error field\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"incomplete@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/auth/create-account",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "create-account"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.2 Register \u2014 Invalid Email Format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for invalid email\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error mentions email\", function () {",
+                  "    pm.expect(pm.response.json().error.toLowerCase()).to.include('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"not-an-email\",\n  \"username\": \"validuser\",\n  \"password\": \"SuperSecret123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/auth/create-account",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "create-account"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.3 Register \u2014 Username Too Short",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for short username\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error mentions username length\", function () {",
+                  "    pm.expect(pm.response.json().error.toLowerCase()).to.include('username');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"short@example.com\",\n  \"username\": \"ab\",\n  \"password\": \"SuperSecret123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/auth/create-account",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "create-account"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.4 Register \u2014 Weak Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for weak password\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error mentions password\", function () {",
+                  "    pm.expect(pm.response.json().error.toLowerCase()).to.include('password');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"weakpass@example.com\",\n  \"username\": \"weakpassuser\",\n  \"password\": \"password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/auth/create-account",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "create-account"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.5 Register \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const status = pm.response.code;",
+                  "const json = pm.response.json();",
+                  "",
+                  "// Fresh run: user created successfully",
+                  "if (status === 201) {",
+                  "    pm.test(\"Returns 201 on success\", function () {",
+                  "        pm.response.to.have.status(201);",
+                  "    });",
+                  "    pm.test(\"Response contains a JWT token\", function () {",
+                  "        pm.expect(json).to.have.property(\"token\");",
+                  "        pm.expect(json.token).to.be.a(\"string\").and.not.empty;",
+                  "    });",
+                  "    pm.test(\"Token has 3 JWT segments\", function () {",
+                  "        pm.expect(json.token.split(\".\")).to.have.lengthOf(3);",
+                  "    });",
+                  "    // Save the token",
+                  "    if (json.token) {",
+                  "        pm.environment.set(\"jwt_token\", json.token);",
+                  "        console.log(\"Token saved from registration.\");",
+                  "    }",
+                  "",
+                  "// Re-run scenario: user already exists from a previous run",
+                  "// Fall back to login to grab a token so the rest of the suite works",
+                  "} else if (status === 401 && json.error === \"User already exist\") {",
+                  "    pm.test(\"User already exists \u2014 logging in to retrieve token\", function () {",
+                  "        pm.expect(true).to.be.true; // soft pass, login will follow",
+                  "    });",
+                  "    console.warn(\"Test user already exists. Logging in to fetch token for remaining tests.\");",
+                  "    pm.sendRequest({",
+                  "        url: pm.environment.get(\"app_url\") + \"/api/auth/login\",",
+                  "        method: \"POST\",",
+                  "        header: { \"Content-Type\": \"application/json\" },",
+                  "        body: {",
+                  "            mode: \"raw\",",
+                  "            raw: JSON.stringify({",
+                  "                username: \"test_dev_01\",",
+                  "                password: \"SuperSecretPassword123!\"",
+                  "            })",
+                  "        }",
+                  "    }, function (err, res) {",
+                  "        if (err) {",
+                  "            console.error(\"Login fallback failed:\", err);",
+                  "            return;",
+                  "        }",
+                  "        const loginJson = res.json();",
+                  "        if (loginJson.token) {",
+                  "            pm.environment.set(\"jwt_token\", loginJson.token);",
+                  "            console.log(\"Token saved via login fallback.\");",
+                  "        } else {",
+                  "            console.error(\"Token not found in login fallback response.\");",
+                  "        }",
+                  "    });",
+                  "",
+                  "} else {",
+                  "    pm.test(\"Returns 201 on success\", function () {",
+                  "        pm.response.to.have.status(201);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test_user@example.com\",\n  \"username\": \"test_dev_01\",\n  \"password\": \"SuperSecretPassword123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/auth/create-account",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "create-account"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.6 Register \u2014 Duplicate Email/Username",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 401 for duplicate user\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "pm.test(\"Error says user already exists\", function () {",
+                  "    pm.expect(pm.response.json().error).to.eql('User already exist');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test_user@example.com\",\n  \"username\": \"test_dev_01\",\n  \"password\": \"SuperSecretPassword123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/auth/create-account",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "create-account"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Auth \u2014 Login",
+      "item": [
+        {
+          "name": "2.1 Login \u2014 Missing Credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for missing credentials\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error field is present\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/auth/login",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.2 Login \u2014 Wrong Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 401 for wrong password\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "pm.test(\"Error is Invalid Credentials\", function () {",
+                  "    pm.expect(pm.response.json().error).to.eql('Invalid Credentials');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"test_dev_01\",\n  \"password\": \"WrongPassword999!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/auth/login",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.3 Login \u2014 Non-Existent User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 401 for non-existent user\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "pm.test(\"Error is Invalid Credentials\", function () {",
+                  "    pm.expect(pm.response.json().error).to.eql('Invalid Credentials');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"ghost_user_xyz\",\n  \"password\": \"SuperSecretPassword123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/auth/login",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.4 Login \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200 on successful login\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response contains token\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('token');",
+                  "    pm.expect(pm.response.json().token).to.be.a('string').and.not.empty;",
+                  "});",
+                  "pm.test(\"Token has valid JWT structure\", function () {",
+                  "    pm.expect(pm.response.json().token.split('.')).to.have.lengthOf(3);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"test_dev_01\",\n  \"password\": \"SuperSecretPassword123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/auth/login",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Auth \u2014 Protected Route Guard",
+      "item": [
+        {
+          "name": "3.1 No Token \u2014 GET /api/jobs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 401 when no token is provided\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/jobs",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.2 Invalid Token \u2014 GET /api/jobs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 401 for invalid/malformed token\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "this.is.not.a.valid.token",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/jobs",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. User Profile",
+      "item": [
+        {
+          "name": "4.1 Get User \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response has user_id field\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('user_id');",
+                  "});",
+                  "pm.test(\"Response has username field\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('username');",
+                  "});",
+                  "pm.test(\"Response has email field\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('email');",
+                  "});",
+                  "pm.test(\"Response does NOT expose password_hash\", function () {",
+                  "    pm.expect(pm.response.json()).to.not.have.property('password_hash');",
+                  "});",
+                  "pm.test(\"Username matches registered value\", function () {",
+                  "    pm.expect(pm.response.json().username).to.eql('test_dev_01');",
+                  "});",
+                  "pm.test(\"Email matches registered value\", function () {",
+                  "    pm.expect(pm.response.json().email).to.eql('test_user@example.com');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/users",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.2 Update User \u2014 Invalid Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for invalid email\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error mentions email\", function () {",
+                  "    pm.expect(pm.response.json().error.toLowerCase()).to.include('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"not-valid\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/users",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.3 Update User \u2014 Username Too Short",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for short username\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error mentions username\", function () {",
+                  "    pm.expect(pm.response.json().error.toLowerCase()).to.include('username');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"x\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/users",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.4 Update User \u2014 No Fields Provided",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 when no valid fields are sent\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/users",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.5 Update User \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200 on successful update\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response has success message\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('message');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"test_dev_01\",\n  \"email\": \"test_user@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/users",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Jobs \u2014 CRUD",
+      "item": [
+        {
+          "name": "5.1 Create Job \u2014 Missing Required Fields",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for missing fields\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error field is present\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"Acme Corp\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/jobs",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.2 Create Job \u2014 Invalid Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for invalid status\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error mentions status\", function () {",
+                  "    pm.expect(pm.response.json().error.toLowerCase()).to.include('status');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"Acme Corp\",\n  \"job_title\": \"Engineer\",\n  \"status\": \"InvalidStatus\",\n  \"application_date\": \"2026-06-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/jobs",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.3 Create Job \u2014 Invalid Date",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for invalid date\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error mentions application date\", function () {",
+                  "    pm.expect(pm.response.json().error.toLowerCase()).to.include('date');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"Acme Corp\",\n  \"job_title\": \"Engineer\",\n  \"status\": \"applied\",\n  \"application_date\": \"not-a-date\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/jobs",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.4 Create Job \u2014 Empty Company Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for empty company name\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"   \",\n  \"job_title\": \"Engineer\",\n  \"status\": \"Applied\",\n  \"application_date\": \"2026-06-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/jobs",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.5 Create Job \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 201 on success\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Response has job_id\", function () {",
+                  "    pm.expect(json).to.have.property('job_id');",
+                  "});",
+                  "pm.test(\"Company name is trimmed correctly\", function () {",
+                  "    pm.expect(json.company_name).to.eql('Itron Test');",
+                  "});",
+                  "pm.test(\"Status is applied\", function () {",
+                  "    pm.expect(json.status).to.eql('applied');",
+                  "});",
+                  "if (json.job_id) {",
+                  "    pm.environment.set('test_job_id', json.job_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"Itron Test\",\n  \"job_title\": \"Software Engineer Intern\",\n  \"status\": \"applied\",\n  \"application_date\": \"2026-06-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/jobs",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.6 Get Jobs \u2014 Default Pagination",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});",
+                  "pm.test(\"Array contains at least one job\", function () {",
+                  "    pm.expect(pm.response.json().length).to.be.at.least(1);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/jobs",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.7 Get Jobs \u2014 Limit Exceeds Max",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 when limit exceeds maximum\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/jobs?limit=999&offset=0",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "999"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.8 Get Job By ID \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "pm.test(\"job_id matches requested ID\", function () {",
+                  "    pm.expect(json.job_id).to.eql(pm.environment.get('test_job_id'));",
+                  "});",
+                  "pm.test(\"All expected fields are present\", function () {",
+                  "    pm.expect(json).to.have.all.keys('job_id', 'user_id', 'company_name', 'job_title', 'status', 'application_date');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/jobs/{{test_job_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs",
+                "{{test_job_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.9 Get Job By ID \u2014 Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 404 for non-existent job\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test(\"Error says not found\", function () {",
+                  "    pm.expect(pm.response.json().error.toLowerCase()).to.include('not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/jobs/999999",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs",
+                "999999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.10 Get Job By ID \u2014 Invalid ID Format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for non-numeric ID\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/jobs/abc",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs",
+                "abc"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.11 Update Job \u2014 No Fields Provided",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 when no valid fields provided\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/jobs/{{test_job_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs",
+                "{{test_job_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.12 Update Job \u2014 Partial Update Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200 on partial update\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Status was updated to interviewed\", function () {",
+                  "    pm.expect(pm.response.json().status).to.eql('interviewed');",
+                  "});",
+                  "pm.test(\"Other fields remain unchanged\", function () {",
+                  "    pm.expect(pm.response.json().company_name).to.eql('Itron Test');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"interviewed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/jobs/{{test_job_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs",
+                "{{test_job_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Skills \u2014 CRUD",
+      "item": [
+        {
+          "name": "6.1 Create Skill \u2014 Missing Fields",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for missing fields\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skill_name\": \"TypeScript\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/skills",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.2 Create Skill \u2014 Comfort Level Out of Range",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for out-of-range comfort level\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error mentions comfort level\", function () {",
+                  "    pm.expect(pm.response.json().error.toLowerCase()).to.include('comfort');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skill_name\": \"TypeScript\",\n  \"comfort_level\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/skills",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.3 Create Skill \u2014 Empty Skill Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for empty skill name\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skill_name\": \"   \",\n  \"comfort_level\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/skills",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.4 Create Skill \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Response has skill_id\", function () {",
+                  "    pm.expect(json).to.have.property('skill_id');",
+                  "});",
+                  "pm.test(\"Skill name is correct\", function () {",
+                  "    pm.expect(json.skill_name).to.eql('TypeScript');",
+                  "});",
+                  "pm.test(\"Comfort level is correct\", function () {",
+                  "    pm.expect(json.comfort_level).to.eql(5);",
+                  "});",
+                  "if (json.skill_id) {",
+                  "    pm.environment.set('test_skill_id', json.skill_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skill_name\": \"TypeScript\",\n  \"comfort_level\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/skills",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.5 Get Skills \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});",
+                  "pm.test(\"At least one skill is returned\", function () {",
+                  "    pm.expect(pm.response.json().length).to.be.at.least(1);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/skills",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.6 Get Skill By ID \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "pm.test(\"skill_id matches\", function () {",
+                  "    pm.expect(json.skill_id).to.eql(pm.environment.get('test_skill_id'));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/skills/{{test_skill_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills",
+                "{{test_skill_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.7 Get Skill By ID \u2014 Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 404 for non-existent skill\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/skills/999999",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills",
+                "999999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.8 Update Skill \u2014 Partial (Comfort Level Only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Comfort level was updated\", function () {",
+                  "    pm.expect(pm.response.json().comfort_level).to.eql(3);",
+                  "});",
+                  "pm.test(\"Skill name remains unchanged\", function () {",
+                  "    pm.expect(pm.response.json().skill_name).to.eql('TypeScript');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comfort_level\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/skills/{{test_skill_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills",
+                "{{test_skill_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Contacts \u2014 CRUD",
+      "item": [
+        {
+          "name": "7.1 Create Contact \u2014 Missing First Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for missing first name\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error mentions first name\", function () {",
+                  "    pm.expect(pm.response.json().error.toLowerCase()).to.include('first name');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"last_name\": \"Smith\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/contacts",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.2 Create Contact \u2014 Invalid Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for invalid email\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error mentions email\", function () {",
+                  "    pm.expect(pm.response.json().error.toLowerCase()).to.include('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Brandon\",\n  \"email\": \"not-an-email\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/contacts",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.3 Create Contact \u2014 Invalid Phone",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for invalid phone number\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error mentions phone\", function () {",
+                  "    pm.expect(pm.response.json().error.toLowerCase()).to.include('phone');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Brandon\",\n  \"phone\": \"not-a-phone\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/contacts",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.4 Create Contact \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Response has contact_id\", function () {",
+                  "    pm.expect(json).to.have.property('contact_id');",
+                  "});",
+                  "pm.test(\"First name is correct\", function () {",
+                  "    pm.expect(json.first_name).to.eql('Brandon');",
+                  "});",
+                  "pm.test(\"Email is stored in lowercase\", function () {",
+                  "    pm.expect(json.email).to.eql('brandon@example.com');",
+                  "});",
+                  "if (json.contact_id) {",
+                  "    pm.environment.set('test_contact_id', json.contact_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Brandon\",\n  \"last_name\": \"Smith\",\n  \"email\": \"brandon@example.com\",\n  \"phone\": \"5551234567\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/contacts",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.5 Get Contact By ID \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "pm.test(\"contact_id matches\", function () {",
+                  "    pm.expect(json.contact_id).to.eql(pm.environment.get('test_contact_id'));",
+                  "});",
+                  "pm.test(\"All expected fields present\", function () {",
+                  "    pm.expect(json).to.include.all.keys('contact_id', 'first_name', 'email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/contacts/{{test_contact_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "{{test_contact_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.6 Get Contact By ID \u2014 Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 404 for non-existent contact\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/contacts/999999",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "999999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.7 Get Contacts \u2014 Default Pagination",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/contacts",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.8 Update Contact \u2014 Partial (Add Notes)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Notes field was added\", function () {",
+                  "    pm.expect(pm.response.json().notes).to.eql('Met at career fair');",
+                  "});",
+                  "pm.test(\"First name remains unchanged\", function () {",
+                  "    pm.expect(pm.response.json().first_name).to.eql('Brandon');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Met at career fair\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/contacts/{{test_contact_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "{{test_contact_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Relational Mapping",
+      "item": [
+        {
+          "name": "8.1 Assign Skill to Job \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Success message is returned\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('message');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/skills/{{test_skill_id}}/jobs/{{test_job_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills",
+                "{{test_skill_id}}",
+                "jobs",
+                "{{test_job_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8.2 Get Skills From Job \u2014 Returns Assigned Skill",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});",
+                  "pm.test(\"Assigned skill appears in the list\", function () {",
+                  "    const skills = pm.response.json();",
+                  "    const found = skills.some(s => s.skill_id === pm.environment.get('test_skill_id'));",
+                  "    pm.expect(found).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/skills/jobs/{{test_job_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills",
+                "jobs",
+                "{{test_job_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8.3 Assign Skill to Non-Existent Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 404 when job does not exist\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/skills/{{test_skill_id}}/jobs/999999",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills",
+                "{{test_skill_id}}",
+                "jobs",
+                "999999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8.4 Assign Contact to Job \u2014 Missing Relationship Type",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 for missing relationship_type\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error mentions relationship type\", function () {",
+                  "    pm.expect(pm.response.json().error.toLowerCase()).to.include('relationship');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/contacts/job/{{test_job_id}}/contact/{{test_contact_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "job",
+                "{{test_job_id}}",
+                "contact",
+                "{{test_contact_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8.5 Assign Contact to Job \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Success message is returned\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('message');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"relationship_type\": \"Recruiter\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/contacts/job/{{test_job_id}}/contact/{{test_contact_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "job",
+                "{{test_job_id}}",
+                "contact",
+                "{{test_contact_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8.6 Get Contacts From Job \u2014 Returns Assigned Contact",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});",
+                  "pm.test(\"Assigned contact appears in the list\", function () {",
+                  "    const contacts = pm.response.json();",
+                  "    const found = contacts.some(c => c.contact_id === pm.environment.get('test_contact_id'));",
+                  "    pm.expect(found).to.be.true;",
+                  "});",
+                  "pm.test(\"Contact has relationship_type field\", function () {",
+                  "    pm.expect(pm.response.json()[0]).to.have.property('relationship_type');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/contacts/job/{{test_job_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "job",
+                "{{test_job_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8.7 Remove Skill from Job \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Success message returned\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('message');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/skills/{{test_skill_id}}/jobs/{{test_job_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills",
+                "{{test_skill_id}}",
+                "jobs",
+                "{{test_job_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8.8 Get Skills From Job \u2014 Confirms Skill Removed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Skill is no longer in list\", function () {",
+                  "    const skills = pm.response.json();",
+                  "    const found = skills.some(s => s.skill_id === pm.environment.get('test_skill_id'));",
+                  "    pm.expect(found).to.be.false;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/skills/jobs/{{test_job_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills",
+                "jobs",
+                "{{test_job_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8.9 Remove Contact from Job \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Success message returned\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('message');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/contacts/job/{{test_job_id}}/contact/{{test_contact_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "job",
+                "{{test_job_id}}",
+                "contact",
+                "{{test_contact_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Teardown",
+      "item": [
+        {
+          "name": "9.1 Delete Job \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Success message returned\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('message');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/jobs/{{test_job_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs",
+                "{{test_job_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9.2 Verify Job Deleted \u2014 Returns 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Deleted job returns 404\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/jobs/{{test_job_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "jobs",
+                "{{test_job_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9.3 Delete Skill \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/skills/{{test_skill_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills",
+                "{{test_skill_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9.4 Verify Skill Deleted \u2014 Returns 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Deleted skill returns 404\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/skills/{{test_skill_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "skills",
+                "{{test_skill_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9.5 Delete Contact \u2014 Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/contacts/{{test_contact_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "{{test_contact_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9.6 Verify Contact Deleted \u2014 Returns 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Deleted contact returns 404\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/contacts/{{test_contact_id}}",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "{{test_contact_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9.7 Delete User \u2014 Wrong Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 401 for wrong password on delete\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"WrongPassword999!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/users",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9.8 Delete User \u2014 No Password Provided",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400 when password is missing\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/users",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9.9 Delete User \u2014 Success (Cleanup)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200 on successful delete\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Success message returned\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('message');",
+                  "});",
+                  "pm.environment.unset('jwt_token');",
+                  "pm.environment.unset('test_job_id');",
+                  "pm.environment.unset('test_skill_id');",
+                  "pm.environment.unset('test_contact_id');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"SuperSecretPassword123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{app_url}}/api/users",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
