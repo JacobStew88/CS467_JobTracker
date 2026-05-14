@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createJob, getJobs, deleteJob, updateJob, } from "../services/jobService";
+import { getSkillsForJob, assignSkillToJob, removeSkillFromJob, getSkills } from "../services/skillsService";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Input from "../components/Input";
@@ -24,15 +25,35 @@ export default function Jobs() {
     status: "applied",
     application_date: "",
   });
+  
+  const [jobSkills, setJobSkills] = useState({});
+  const [allSkills, setAllSkills] = useState([]);
+  const [selectedSkill, setSelectedSkill] = useState({});
 
-  async function loadJobs() {
-    try {
-      const data = await getJobs();
-      setJobs(data.jobs || data);
-    } catch (err) {
-      console.log(err.message);
+
+async function loadJobs() {
+  try {
+    const jobsData = await getJobs();
+    const jobsList = jobsData.jobs || jobsData;
+    setJobs(jobsList);
+
+    // Load all available skills
+    const skills = await getSkills();
+    setAllSkills(skills);
+
+    // Load skills for each job
+    const skillsMap = {};
+    for (const job of jobsList) {
+      const skillsForJob = await getSkillsForJob(job.job_id);
+      skillsMap[job.job_id] = skillsForJob;
     }
+    setJobSkills(skillsMap);
+
+  } catch (err) {
+    console.log(err.message);
   }
+}
+
 
   useEffect(() => {
     loadJobs();
@@ -132,6 +153,40 @@ export default function Jobs() {
     return `${month}/${day}/${year}`;
   }
 
+  // Skills Section
+async function handleAssignSkill(jobId) {
+  const skillId = selectedSkill[jobId];
+  if (!skillId) return;
+
+  try {
+    await assignSkillToJob(skillId, jobId);
+
+    const updated = await getSkillsForJob(jobId);
+    setJobSkills((prev) => ({
+      ...prev,
+      [jobId]: updated,
+    }));
+
+    setSelectedSkill((prev) => ({ ...prev, [jobId]: "" }));
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+async function handleRemoveSkill(jobId, skillId) {
+  try {
+    await removeSkillFromJob(skillId, jobId);
+
+    setJobSkills((prev) => ({
+      ...prev,
+      [jobId]: prev[jobId].filter((s) => s.skill_id !== skillId),
+    }));
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+
   // RENDER
   return (
     <div className="body">
@@ -147,6 +202,7 @@ export default function Jobs() {
                 <th>Company</th>
                 <th>Title</th>
                 <th>Status</th>
+                <th>Skills</th>
                 <th>Date</th>
                 <th />
               </tr>
@@ -158,7 +214,28 @@ export default function Jobs() {
                   <td>{job.job_title}</td>
                   <td className={`status status-${job.status}`}>
                     {job.status}
-                  </td>  
+                  </td> 
+                  <td> {(jobSkills[job.job_id] || []).map((skill) => (
+                    <span key={skill.skill_id} className="skill-tag">
+                      {skill.skill_name}
+                      <button onClick={() => handleRemoveSkill(job.job_id, skill.skill_id)}>
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+                  <select value={selectedSkill[job.job_id] || ""} onChange={(e) => 
+                  setSelectedSkill((prev) => ({...prev, [job.job_id]: e.target.value,}))}>
+                    <option value="">Select skill</option>
+                    {allSkills.map((skill) => (
+                    <option key={skill.skill_id} value={skill.skill_id}>
+                      {skill.skill_name}
+                    </option>
+                  ))}
+                  </select>
+                  <Button onClick={() => handleAssignSkill(job.job_id)}>
+                    Add
+                    </Button>
+                    </td>
                   <td>{formatDate(job.application_date)}</td>
                   <td>
                     <div className="button-group">
