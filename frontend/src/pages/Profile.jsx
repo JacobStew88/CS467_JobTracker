@@ -1,7 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { getProtected } from "../services/authService";
-import { createJob } from "../services/jobService";
+import { createJob, getJobs } from "../services/jobService";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Input from "../components/Input";
@@ -18,6 +18,14 @@ export default function Profile() {
 
 useEffect(() => {
   const token = localStorage.getItem("token");
+  const [stats, setStats] = useState({
+    total: 0,
+    applied: 0,
+    interview: 0,
+    offer: 0,
+    rejected: 0,
+  });
+
 
   if (token) {
     const decoded = jwtDecode(token);
@@ -25,43 +33,49 @@ useEffect(() => {
     setUser(decoded);
   }
 
-  async function loadProtected() {
+  async function loadDashboard() {
     try {
-      const data = await getProtected();
-      console.log("PROTECTED DATA:", data);
-      setProfile({
-        bio: "This is my bio...",
-        avatar: "https://i.pravatar.cc/150",
-        jobsApplied: `${data.length}`
-      });
+      const data = await getJobs();
+      const jobs = data.jobs || data;
 
-      setMessage(`Jobs loaded: ${data.length}`);
+      setProfile((prev) => ({
+        ...prev,
+        jobsApplied: jobs.length,
+      }));
     } catch (err) {
-      setMessage(err.message);
+      console.log(err.message);
     }
   }
-
-  loadProtected();
-}, []);
+  loadDashboard();
+  }, []);
 
   return (
-<div className="body">
-  <h1>Dashboard</h1>
-  <Card>
-  <div>
-    {/* Profile Picture */}
-    <img src={profile.avatar} className="profile-avatar"/>
-
-    {/* Username */}
-    <h2>Welcome, User #{user?.user_id}</h2>
-
-    {/* Bio */}
-    <p><strong>Bio:</strong> {profile.bio || "No bio yet"}</p>
-
-    {/* Jobs applied */}
-    <p><strong>Jobs Applied:</strong> {profile.jobsApplied}</p>
+    <div className="body">
+      <h1>Dashboard</h1>
+      <h2>Welcome, User #{user?.user_id}</h2>
+      {/* STATS GRID */}
+      <div className="stats-grid">
+        <Card>
+          <h3>Total Jobs</h3>
+          <p>{stats.total}</p>
+        </Card>
+        <Card>
+          <h3>Applied</h3>
+          <p>{stats.applied}</p>
+        </Card>
+        <Card>
+          <h3>Interview</h3>
+          <p>{stats.interview}</p>
+        </Card>
+        <Card>
+          <h3>Offers</h3>
+          <p>{stats.offer}</p>
+        </Card>
+        <Card>
+          <h3>Rejected</h3>
+          <p>{stats.rejected}</p>
+        </Card>
+    </div>
   </div>
-  </Card>
-</div>
   );
 }

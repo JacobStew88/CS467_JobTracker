@@ -312,3 +312,14 @@ html, body {
   color: var(--text);
 }
 
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.stats-grid p {
+  font-size: 24px;
+  font-weight: bold;
+}
+
