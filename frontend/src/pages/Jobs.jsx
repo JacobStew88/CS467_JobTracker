@@ -110,6 +110,7 @@ async function loadJobs() {
 
   // ADD
   function openAdd() {
+    console.log("open add clicked");
     setIsAddOpen(true);
   }
 

@@ -36,7 +36,7 @@ export function deleteSkill(id) {
 
 // Get all skills assigned to a job
 export function getSkillsForJob(jobId) {
-  return request(`/jobs/${jobId}/skills`);
+  return request(`/skills/jobs/${jobId}`);
 }
 
 // Assign a skill to a job

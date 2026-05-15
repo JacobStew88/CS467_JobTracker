@@ -32,9 +32,7 @@ useEffect(() => {
   async function loadDashboard() {
     try {
       const data = await getJobs();
-      console.log("RAW:", data);
       const jobs = data;
-      console.log("jobs",jobs);
       const newStats = {
         total: jobs.length,
         applied: 0,
@@ -43,7 +41,7 @@ useEffect(() => {
         decision: 0,
       };
 
-      jobs.foreach((job) => {
+      jobs.forEach((job) => {
         if (job.status === 'applied') newStats.applied++;
         if (job.status === 'waiting') newStats.waiting++;
         if (job.status === 'interviewed') newStats.interviewed++;
