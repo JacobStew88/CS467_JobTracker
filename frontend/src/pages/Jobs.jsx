@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createJob, getJobs, deleteJob, updateJob, } from "../services/jobService";
-import { getSkillsForJob, assignSkillToJob, removeSkillFromJob, getSkills } from "../services/skillsService";
+import { getSkillsForJob, assignSkillToJob, removeSkillFromJob, getSkills } from "../services/skillService";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Input from "../components/Input";

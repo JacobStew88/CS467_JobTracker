@@ -9,24 +9,20 @@ import Input from "../components/Input";
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
+  const [stats, setStats] = useState({
+    total: 0,
+    applied: 0,
+    waiting: 0,
+    interviewed: 0,
+    decision: 0,
+  });
   const [profile, setProfile] = useState({
-  bio: "",
-  avatar: null,
-  jobsApplied: 0,
+  avatar: "https://i.pravatar.cc/150"
 });
 
 
 useEffect(() => {
   const token = localStorage.getItem("token");
-  const [stats, setStats] = useState({
-    total: 0,
-    applied: 0,
-    interview: 0,
-    offer: 0,
-    rejected: 0,
-  });
-
-
   if (token) {
     const decoded = jwtDecode(token);
     console.log("DECODED JWT:", decoded);
@@ -36,12 +32,24 @@ useEffect(() => {
   async function loadDashboard() {
     try {
       const data = await getJobs();
-      const jobs = data.jobs || data;
+      console.log("RAW:", data);
+      const jobs = data;
+      console.log("jobs",jobs);
+      const newStats = {
+        total: jobs.length,
+        applied: 0,
+        waiting: 0,
+        interviewed: 0,
+        decision: 0,
+      };
 
-      setProfile((prev) => ({
-        ...prev,
-        jobsApplied: jobs.length,
-      }));
+      jobs.foreach((job) => {
+        if (job.status === 'applied') newStats.applied++;
+        if (job.status === 'waiting') newStats.waiting++;
+        if (job.status === 'interviewed') newStats.interviewed++;
+        if (job.status === 'decision') newStats.decision++;
+      });
+      setStats(newStats);
     } catch (err) {
       console.log(err.message);
     }
@@ -52,6 +60,7 @@ useEffect(() => {
   return (
     <div className="body">
       <h1>Dashboard</h1>
+      <img src={profile.avatar} className="profile-avatar"/>      
       <h2>Welcome, User #{user?.user_id}</h2>
       {/* STATS GRID */}
       <div className="stats-grid">
@@ -64,16 +73,16 @@ useEffect(() => {
           <p>{stats.applied}</p>
         </Card>
         <Card>
-          <h3>Interview</h3>
-          <p>{stats.interview}</p>
+          <h3>Waiting</h3>
+          <p>{stats.waiting}</p>
         </Card>
         <Card>
-          <h3>Offers</h3>
-          <p>{stats.offer}</p>
+          <h3>Interviewed</h3>
+          <p>{stats.interviewed}</p>
         </Card>
         <Card>
-          <h3>Rejected</h3>
-          <p>{stats.rejected}</p>
+          <h3>Decision</h3>
+          <p>{stats.decision}</p>
         </Card>
     </div>
   </div>
