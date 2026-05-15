@@ -13,7 +13,6 @@ export function getSkills() {
   return request("/skills");
 }
 
-
 // READ ONE
 export function getSkill(id) {
   return request(`/skills/${id}`);
@@ -34,19 +33,19 @@ export function deleteSkill(id) {
   });
 }
 
-// Get all skills assigned to a job
+// ✅ FIXED ROUTE
 export function getSkillsForJob(jobId) {
   return request(`/skills/jobs/${jobId}`);
 }
 
-// Assign a skill to a job
+// Assign
 export function assignSkillToJob(skillId, jobId) {
   return request(`/skills/${skillId}/jobs/${jobId}`, {
     method: "POST",
   });
 }
 
-// Remove a skill from a job
+// Remove
 export function removeSkillFromJob(skillId, jobId) {
   return request(`/skills/${skillId}/jobs/${jobId}`, {
     method: "DELETE",
