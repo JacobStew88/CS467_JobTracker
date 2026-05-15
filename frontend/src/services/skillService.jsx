@@ -9,9 +9,10 @@ export function createSkill(skillData) {
 }
 
 // READ ALL
-export function getSkills({ limit = 10, offset = 0 } = {}) {
-  return request(`/skills?limit=${limit}&offset=${offset}`);
+export function getSkills() {
+  return request("/skills");
 }
+
 
 // READ ONE
 export function getSkill(id) {
@@ -34,8 +35,8 @@ export function deleteSkill(id) {
 }
 
 // Get all skills assigned to a job
-export function getSkillsForJob(jobId, { limit = 10, offset = 0 } = {}) {
-  return request(`/jobs/${jobId}/skills?limit=${limit}&offset=${offset}`);
+export function getSkillsForJob(jobId) {
+  return request(`/jobs/${jobId}/skills`);
 }
 
 // Assign a skill to a job
