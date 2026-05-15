@@ -207,50 +207,70 @@ async function handleRemoveSkill(jobId, skillId) {
                 <th />
               </tr>
             </thead>
-            <tbody>
-              {jobs.map((job) => (
-                <tr key={job.job_id}>
-                  <td>{job.company_name}</td>
-                  <td>{job.job_title}</td>
-                  <td className={`status status-${job.status}`}>
-                    {job.status}
-                  </td> 
-                  <td> {(jobSkills[job.job_id] || []).map((skill) => (
-                    <span key={skill.skill_id} className="skill-tag">
-                      {skill.skill_name}
-                      <button onClick={() => handleRemoveSkill(job.job_id, skill.skill_id)}>
-                        ✕
-                      </button>
-                    </span>
-                  ))}
-                  <select value={selectedSkill[job.job_id] || ""} onChange={(e) => 
-                  setSelectedSkill((prev) => ({...prev, [job.job_id]: e.target.value,}))}>
-                    <option value="">Select skill</option>
-                    {allSkills.map((skill) => (
-                    <option key={skill.skill_id} value={skill.skill_id}>
-                      {skill.skill_name}
-                    </option>
-                  ))}
-                  </select>
-                  <Button onClick={() => handleAssignSkill(job.job_id)}>
-                    Add
-                    </Button>
-                    </td>
-                  <td>{formatDate(job.application_date)}</td>
-                  <td>
-                    <div className="button-group">
-                    <Button onClick={() => openEdit(job)}>
-                      Edit
-                    </Button>
-                    <Button onClick={() => handleDelete(job.job_id)}>
-                      Delete
-                    </Button>
-                    {console.log(job.application_date)}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+<tbody>
+  {jobs.map((job) => (
+    <tr key={job.job_id}>
+      <td>{job.company_name}</td>
+      <td>{job.job_title}</td>
+
+      <td className={`status status-${job.status}`}>
+        {job.status}
+      </td>
+
+      {/* ✅ 🔥 THIS IS WHERE STEP 3 GOES */}
+      <td>
+        {/* Existing skills */}
+        {(jobSkills[job.job_id] || []).map((s) => (
+          <span key={s.skill_id}>
+            {s.skill_name}
+            <button
+              onClick={() =>
+                handleRemoveSkill(job.job_id, s.skill_id)
+              }
+            >
+              x
+            </button>
+          </span>
+        ))}
+
+        {/* Add skill dropdown */}
+        <div>
+          <select
+            onChange={(e) =>
+              setSelectedSkill({
+                ...selectedSkill,
+                [job.job_id]: e.target.value,
+              })
+            }
+          >
+            <option value="">Add skill</option>
+            {allSkills.map((s) => (
+              <option key={s.skill_id} value={s.skill_id}>
+                {s.skill_name}
+              </option>
+            ))}
+          </select>
+
+          <button onClick={() => handleAssignSkill(job.job_id)}>
+            Add
+          </button>
+        </div>
+      </td>
+
+      {/* ✅ Date stays after skills */}
+      <td>{formatDate(job.application_date)}</td>
+
+      {/* ✅ Actions */}
+      <td>
+        <div className="button-group">
+          <Button onClick={() => openEdit(job)}>Edit</Button>
+          <Button onClick={() => handleDelete(job.job_id)}>Delete</Button>
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
           </table>
         )}
       </Card>
