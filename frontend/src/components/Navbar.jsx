@@ -31,6 +31,7 @@ export default function Navbar() {
             <>
               <li><Link to="/profile">Profile</Link></li>
               <li><Link to="/jobs">Jobs</Link></li>
+              <li><Link to="/skills">Skills</Link></li>
               <li><Button onClick={handleLogout}>Logout</Button></li>
             </>
           ) : (

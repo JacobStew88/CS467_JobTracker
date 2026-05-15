@@ -33,7 +33,7 @@ export function deleteSkill(id) {
   });
 }
 
-// ✅ FIXED ROUTE
+// FIXED ROUTE
 export function getSkillsForJob(jobId) {
   return request(`/skills/jobs/${jobId}`);
 }
