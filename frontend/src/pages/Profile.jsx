@@ -2,6 +2,7 @@ import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { getProtected } from "../services/authService";
 import { createJob, getJobs } from "../services/jobService";
+import ResetPassword from "./ResetPassword";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Input from "../components/Input";

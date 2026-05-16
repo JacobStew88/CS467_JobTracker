@@ -5,11 +5,14 @@ import About from "./pages/About";
 import Login from './pages/Login';
 import SignUp from './pages/SignUp'
 import Profile from "./pages/Profile"
+import Jobs from "./pages/Jobs";
+import Skills from './pages/Skills';
+import ResetPassword from './pages/ResetPassword';
+import ForgotPassword from './pages/ForgotPassword';
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./components/AuthContext";
-import Jobs from "./pages/Jobs";
-import Skills from './pages/Skills';
+
 
 function App() {
   return (
@@ -22,6 +25,8 @@ function App() {
       <Route path="/about" element={<About />} />
       <Route path="/login" element={<Login/>} />
       <Route path="/signup" element={<SignUp/>} />
+      <Route path='/forgot-password' element={<ForgotPassword/>} />
+      <Route path='/reset-password' element={<ResetPassword/>} />
      
       {/* PROTECTED ROUTES */}
       <Route path="/profile" element={<ProtectedRoute> <Profile /></ProtectedRoute>} />
