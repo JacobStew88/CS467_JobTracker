@@ -7,6 +7,7 @@ import SignUp from './pages/SignUp'
 import Profile from "./pages/Profile"
 import Jobs from "./pages/Jobs";
 import Skills from './pages/Skills';
+import Contacts from './pages/Contacts';
 import ResetPassword from './pages/ResetPassword';
 import ForgotPassword from './pages/ForgotPassword';
 import Navbar from "./components/Navbar";
@@ -32,6 +33,7 @@ function App() {
       <Route path="/profile" element={<ProtectedRoute> <Profile /></ProtectedRoute>} />
       <Route path="/jobs" element={<ProtectedRoute> <Jobs /></ProtectedRoute>} />  
       <Route path="/skills" element={<ProtectedRoute> <Skills /></ProtectedRoute>} />  
+      <Route path="/contacts" element={<ProtectedRoute> <Contacts /></ProtectedRoute>} /> 
     </Routes>
     </BrowserRouter>
     </AuthProvider>

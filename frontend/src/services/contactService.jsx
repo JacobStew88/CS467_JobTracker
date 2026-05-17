@@ -33,22 +33,19 @@ export function deleteContact(id) {
   });
 }
 
-// GET CONTACTS FOR JOB
 export function getContactsFromJob(jobId) {
-  return request(`/jobs/${jobId}/contacts`);
+  return request(`/contacts/job/${jobId}`);
 }
 
-// ASSIGN CONTACT TO JOB
 export function assignContactToJob(jobId, contactId, relationship_type) {
-  return request(`/jobs/${jobId}/contacts/${contactId}`, {
+  return request(`/contacts/job/${jobId}/contact/${contactId}`, {
     method: "POST",
     body: JSON.stringify({ relationship_type }),
   });
 }
 
-// REMOVE CONTACT FROM JOB
 export function removeContactFromJob(jobId, contactId) {
-  return request(`/jobs/${jobId}/contacts/${contactId}`, {
+  return request(`/contacts/job/${jobId}/contact/${contactId}`, {
     method: "DELETE",
   });
 }
