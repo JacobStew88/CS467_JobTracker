@@ -33,7 +33,7 @@ ENV NODE_ENV=production
 # Security: Create and use a non-root user
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 expressuser
-USER expressuser
+
 
 # Copy only the compiled JS and the package files
 COPY --from=builder /app/dist ./dist
@@ -41,6 +41,9 @@ COPY --from=builder /app/package*.json ./
 
 # Install ONLY production dependencies (this removes tsc, ts-node-dev, etc.)
 RUN npm ci --omit=dev
+
+# Drop privileges after install
+USER expressuser
 
 # Express port (must match your app.listen port)
 EXPOSE 3000
