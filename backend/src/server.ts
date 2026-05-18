@@ -8,6 +8,7 @@ import jobRouter from './routes/jobRoutes.js';
 import skillRouter from './routes/skillRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import contactRouter from './routes/contactRoutes.js';
+import statsRouter from './routes/statsRoutes.js';
 
 // Enviroment Variables
 dotenv.config();
@@ -26,6 +27,7 @@ app.use('/api/jobs', requireAuth, jobRouter);
 app.use('/api/skills', requireAuth, skillRouter);
 app.use('/api/users', requireAuth, userRouter);
 app.use('/api/contacts', requireAuth, contactRouter);
+app.use('/api/stats', requireAuth, statsRouter);
 
 // Test Route
 app.get('/', (req: Request, res: Response) => {
