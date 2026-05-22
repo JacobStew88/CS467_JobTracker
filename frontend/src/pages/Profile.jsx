@@ -13,7 +13,9 @@ export default function Profile() {
     decision: 0,
     totalSkills: 0,
     averageComfortLevel: null,
+    skillCoverage: [],
   });
+
   const [profile] = useState({
     avatar: "https://i.pravatar.cc/150",
   });
@@ -29,7 +31,12 @@ export default function Profile() {
     async function loadDashboard() {
       try {
         const data = await getDashboardStats();
-        setStats(data);
+
+        setStats((prev) => ({
+          ...prev,
+          ...data,
+          skillCoverage: data.skillCoverage ?? [],
+        }));
       } catch (err) {
         console.log(err.message);
       }
@@ -39,47 +46,76 @@ export default function Profile() {
   }, []);
 
   return (
-    <div className="body">
-      <h1>Dashboard</h1>
-      <img src={profile.avatar} className="profile-avatar" />
-      <h2>Welcome, User #{user?.user_id}</h2>
+    <div className="body dashboard-page">
+      <section className="dashboard-header">
+        <h1>Dashboard</h1>
+        <img src={profile.avatar} className="profile-avatar" />
+        <h2>Welcome, User #{user?.user_id}</h2>
+      </section>
 
-      <div className="stats-grid">
-        <Card>
-          <h3>Total Jobs</h3>
-          <p>{stats.totalJobs}</p>
-        </Card>
+      <section className="dashboard-section">
+        <h2 className="dashboard-section-title">Application Summary</h2>
 
-        <Card>
-          <h3>Applied</h3>
-          <p>{stats.applied}</p>
-        </Card>
+        <div className="stats-grid">
+          <Card>
+            <h3>Total Jobs</h3>
+            <p>{stats.totalJobs}</p>
+          </Card>
 
-        <Card>
-          <h3>Waiting</h3>
-          <p>{stats.waiting}</p>
-        </Card>
+          <Card>
+            <h3>Applied</h3>
+            <p>{stats.applied}</p>
+          </Card>
 
-        <Card>
-          <h3>Interviewed</h3>
-          <p>{stats.interviewed}</p>
-        </Card>
+          <Card>
+            <h3>Waiting</h3>
+            <p>{stats.waiting}</p>
+          </Card>
 
-        <Card>
-          <h3>Decision</h3>
-          <p>{stats.decision}</p>
-        </Card>
+          <Card>
+            <h3>Interviewed</h3>
+            <p>{stats.interviewed}</p>
+          </Card>
 
-        <Card>
-          <h3>Total Skills</h3>
-          <p>{stats.totalSkills}</p>
-        </Card>
+          <Card>
+            <h3>Decision</h3>
+            <p>{stats.decision}</p>
+          </Card>
 
-        <Card>
-          <h3>Avg. Comfort</h3>
-          <p>{stats.averageComfortLevel ?? "N/A"}</p>
-        </Card>
-      </div>
+          <Card>
+            <h3>Total Skills</h3>
+            <p>{stats.totalSkills}</p>
+          </Card>
+
+          <Card>
+            <h3>Avg. Comfort</h3>
+            <p>{stats.averageComfortLevel ?? "N/A"}</p>
+          </Card>
+        </div>
+      </section>
+
+      <section className="dashboard-section">
+        <h2 className="dashboard-section-title">Skill Coverage</h2>
+
+        <div className="skill-coverage-grid">
+          {stats.skillCoverage.length === 0 ? (
+            <Card>
+              <h3>No skills yet</h3>
+              <p>Add skills and assign them to jobs to see coverage.</p>
+            </Card>
+          ) : (
+            stats.skillCoverage.map((skill) => (
+              <Card key={skill.skillName}>
+                <h3>{skill.skillName}</h3>
+                <p>Comfort: {skill.comfortLevel} / 5</p>
+                <p>
+                  Jobs using skill: {skill.jobsWithSkill} / {stats.totalJobs}
+                </p>
+                <p>{skill.percentageOfJobs}% of jobs</p>
+              </Card>
+            ))
+          )}
+        </div>
+      </section>
     </div>
-  );
-}
+  )};
