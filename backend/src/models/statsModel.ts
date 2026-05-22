@@ -14,6 +14,20 @@ export interface SkillStats extends RowDataPacket {
   average_comfort_level: number | null;
 }
 
+export interface SkillCoverageRow extends RowDataPacket {
+  skill_name: string;
+  comfort_level: number;
+  jobs_with_skill: number;
+  total_jobs: number;
+}
+
+export interface SkillCoverage {
+  skillName: string;
+  comfortLevel: number;
+  jobsWithSkill: number;
+  percentageOfJobs: number;
+}
+
 export interface DashboardStats {
   totalJobs: number;
   applied: number;
@@ -22,13 +36,13 @@ export interface DashboardStats {
   decision: number;
   totalSkills: number;
   averageComfortLevel: number | null;
+  skillCoverage: SkillCoverage[];
 }
 
 export const getDashboardStats = async (
   userId: number
 ): Promise<DashboardStats> => {
-   // Aggregate job counts by status for this user
-    const [jobRows] = await pool.query<JobStatusStats[]>(
+  const [jobRows] = await pool.query<JobStatusStats[]>(
     `
       SELECT
         COUNT(*) AS total_jobs,
@@ -42,7 +56,6 @@ export const getDashboardStats = async (
     [userId]
   );
 
-  // Skill totals and average confidence level
   const [skillRows] = await pool.query<SkillStats[]>(
     `
       SELECT
@@ -54,8 +67,40 @@ export const getDashboardStats = async (
     [userId]
   );
 
+  const [coverageRows] = await pool.query<SkillCoverageRow[]>(
+    `
+      SELECT
+        Skills.skill_name,
+        Skills.comfort_level,
+        COUNT(JobSkills.job_id) AS jobs_with_skill,
+        (
+          SELECT COUNT(*)
+          FROM Jobs
+          WHERE Jobs.user_id = ?
+        ) AS total_jobs
+      FROM Skills
+      LEFT JOIN JobSkills
+        ON Skills.skill_id = JobSkills.skill_id
+      WHERE Skills.user_id = ?
+      GROUP BY Skills.skill_id
+    `,
+    [userId, userId]
+  );
+
   const jobStats = jobRows[0];
   const skillStats = skillRows[0];
+
+  const skillCoverage = coverageRows.map((row) => ({
+    skillName: row.skill_name,
+    comfortLevel: row.comfort_level,
+    jobsWithSkill: Number(row.jobs_with_skill),
+    percentageOfJobs:
+      Number(row.total_jobs) === 0
+        ? 0
+        : Number(
+            ((Number(row.jobs_with_skill) / Number(row.total_jobs)) * 100).toFixed(1)
+          ),
+  }));
 
   return {
     totalJobs: Number(jobStats.total_jobs),
@@ -68,5 +113,6 @@ export const getDashboardStats = async (
       skillStats.average_comfort_level === null
         ? null
         : Number(Number(skillStats.average_comfort_level).toFixed(2)),
+    skillCoverage,
   };
 };
