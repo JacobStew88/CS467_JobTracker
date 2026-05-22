@@ -174,7 +174,7 @@ html, body {
   width: auto;
   display: block;
 }
-  
+
 .card {
   background: var(--card);
   color: var(--text);
@@ -290,13 +290,13 @@ html, body {
   align-items: center;
   justify-content: center;
   padding: 110px 20px 60px;
-  background: transparent; 
+  background: transparent;
   position: relative;
   overflow: hidden;
 }
 
 .hero-logo {
-  height: 300px;   
+  height: 300px;
   width: auto;
   display: block;
   margin: 0 auto 18px;
@@ -323,3 +323,62 @@ html, body {
   font-weight: bold;
 }
 
+/* =========================
+   PROFILE DASHBOARD
+========================= */
+
+.dashboard-page {
+  padding-top: 40px;
+  padding-bottom: 60px;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.dashboard-header h1 {
+  margin-bottom: 10px;
+  font-size: 42px;
+}
+
+.dashboard-header h2 {
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.dashboard-section {
+  width: 100%;
+  max-width: 950px;
+  margin: 0 auto 50px;
+}
+
+.dashboard-section-title {
+  text-align: center;
+  font-size: 34px;
+  margin-bottom: 25px;
+}
+
+.skill-coverage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  justify-content: center;
+}
+
+.skill-coverage-grid .card {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.skill-coverage-grid h3 {
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+.skill-coverage-grid p {
+  font-size: 18px;
+  margin: 8px 0;
+}
