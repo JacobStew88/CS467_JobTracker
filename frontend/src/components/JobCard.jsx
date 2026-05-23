@@ -24,7 +24,7 @@ export default function JobCard({ job, onEdit, onDelete }) {
         </div>
 
         <span className={`status status-${job.status}`}>
-          {job.status}
+          {job.status.replace(/^./, char => char.toUpperCase())}
         </span>
       </div>
 

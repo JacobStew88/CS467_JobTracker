@@ -75,7 +75,7 @@ export default function JobSkills({ jobId }) {
         value={selectedSkill}
         onChange={(e) => setSelectedSkill(e.target.value)}
       >
-        <option value="">Add skill</option>
+        <option value="">Select Skill</option>
         {allSkills.map((s) => (
           <option key={s.skill_id} value={s.skill_id}>
             {s.skill_name}
