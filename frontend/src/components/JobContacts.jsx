@@ -58,68 +58,60 @@ export default function JobContacts({ jobId }) {
     }
   }
 
-  return (
-    <div>
+return (
+  <div className="skill-block">
+
+    {/* existing contacts */}
+    <div className="chip-row">
       {contacts.map((contact) => (
-        <div key={contact.contact_id}>
+        <span key={contact.contact_id} className="chip">
           {contact.first_name} {contact.last_name}
-          {" "}
-          ({contact.relationship_type})
+          <span className="chip-meta">
+            {contact.relationship_type}
+          </span>
 
           <button
-            onClick={() =>
-              handleRemove(contact.contact_id)
-            }
+            className="chip-remove"
+            onClick={() => handleRemove(contact.contact_id)}
           >
-            x
+            ×
           </button>
-        </div>
+        </span>
       ))}
-
-      <div>
-        <select
-          value={selectedContact}
-          onChange={(e) =>
-            setSelectedContact(e.target.value)
-          }
-        >
-          <option value="">Contact</option>
-
-          {allContacts.map((contact) => (
-            <option
-              key={contact.contact_id}
-              value={contact.contact_id}
-            >
-              {contact.first_name} {contact.last_name}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={relationshipType}
-          onChange={(e) =>
-            setRelationshipType(e.target.value)
-          }
-        >
-          <option value="">Relationship</option>
-          <option value="Recruiter">
-            Recruiter
-          </option>
-          <option value="Hiring Manager">
-            Hiring Manager
-          </option>
-          <option value="Referral">
-            Referral
-          </option>
-          <option value="Interviewer">
-            Interviewer
-          </option>
-        </select>
-
-        <button onClick={handleAssign}>
-          +
-        </button>
-      </div>
     </div>
-  );
+
+    {/* add contact */}
+    <div className="skill-add">
+      <select
+        value={selectedContact}
+        onChange={(e) => setSelectedContact(e.target.value)}
+      >
+        <option value="">Select contact</option>
+
+        {allContacts.map((contact) => (
+          <option
+            key={contact.contact_id}
+            value={contact.contact_id}
+          >
+            {contact.first_name} {contact.last_name}
+          </option>
+        ))}
+      </select>
+
+      <select
+        value={relationshipType}
+        onChange={(e) => setRelationshipType(e.target.value)}
+      >
+        <option value="">Role</option>
+        <option value="Recruiter">Recruiter</option>
+        <option value="Hiring Manager">Hiring Manager</option>
+        <option value="Referral">Referral</option>
+        <option value="Interviewer">Interviewer</option>
+      </select>
+
+      <button onClick={handleAssign}>+</button>
+    </div>
+
+  </div>
+);
 }
