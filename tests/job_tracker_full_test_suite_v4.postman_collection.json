@@ -6,10 +6,10 @@
   },
   "item": [
     {
-      "name": "1. Auth \u2014 Registration",
+      "name": "1. Auth — Registration",
       "item": [
         {
-          "name": "1.1 Register \u2014 Missing Fields",
+          "name": "1.1 Register — Missing Fields",
           "event": [
             {
               "listen": "test",
@@ -52,7 +52,7 @@
           }
         },
         {
-          "name": "1.2 Register \u2014 Invalid Email Format",
+          "name": "1.2 Register — Invalid Email Format",
           "event": [
             {
               "listen": "test",
@@ -95,7 +95,7 @@
           }
         },
         {
-          "name": "1.3 Register \u2014 Username Too Short",
+          "name": "1.3 Register — Username Too Short",
           "event": [
             {
               "listen": "test",
@@ -138,7 +138,7 @@
           }
         },
         {
-          "name": "1.4 Register \u2014 Weak Password",
+          "name": "1.4 Register — Weak Password",
           "event": [
             {
               "listen": "test",
@@ -181,7 +181,7 @@
           }
         },
         {
-          "name": "1.5 Register \u2014 Success",
+          "name": "1.5 Register — Success",
           "event": [
             {
               "listen": "test",
@@ -212,7 +212,7 @@
                   "// Re-run scenario: user already exists from a previous run",
                   "// Fall back to login to grab a token so the rest of the suite works",
                   "} else if (status === 401 && json.error === \"User already exist\") {",
-                  "    pm.test(\"User already exists \u2014 logging in to retrieve token\", function () {",
+                  "    pm.test(\"User already exists — logging in to retrieve token\", function () {",
                   "        pm.expect(true).to.be.true; // soft pass, login will follow",
                   "    });",
                   "    console.warn(\"Test user already exists. Logging in to fetch token for remaining tests.\");",
@@ -276,7 +276,7 @@
           }
         },
         {
-          "name": "1.6 Register \u2014 Duplicate Email/Username",
+          "name": "1.6 Register — Duplicate Email/Username",
           "event": [
             {
               "listen": "test",
@@ -321,10 +321,10 @@
       ]
     },
     {
-      "name": "2. Auth \u2014 Login",
+      "name": "2. Auth — Login",
       "item": [
         {
-          "name": "2.1 Login \u2014 Missing Credentials",
+          "name": "2.1 Login — Missing Credentials",
           "event": [
             {
               "listen": "test",
@@ -367,7 +367,7 @@
           }
         },
         {
-          "name": "2.2 Login \u2014 Wrong Password",
+          "name": "2.2 Login — Wrong Password",
           "event": [
             {
               "listen": "test",
@@ -410,7 +410,7 @@
           }
         },
         {
-          "name": "2.3 Login \u2014 Non-Existent User",
+          "name": "2.3 Login — Non-Existent User",
           "event": [
             {
               "listen": "test",
@@ -453,7 +453,7 @@
           }
         },
         {
-          "name": "2.4 Login \u2014 Success",
+          "name": "2.4 Login — Success",
           "event": [
             {
               "listen": "test",
@@ -502,10 +502,10 @@
       ]
     },
     {
-      "name": "3. Auth \u2014 Protected Route Guard",
+      "name": "3. Auth — Protected Route Guard",
       "item": [
         {
-          "name": "3.1 No Token \u2014 GET /api/jobs",
+          "name": "3.1 No Token — GET /api/jobs",
           "event": [
             {
               "listen": "test",
@@ -535,7 +535,7 @@
           }
         },
         {
-          "name": "3.2 Invalid Token \u2014 GET /api/jobs",
+          "name": "3.2 Invalid Token — GET /api/jobs",
           "event": [
             {
               "listen": "test",
@@ -580,7 +580,7 @@
       "name": "4. User Profile",
       "item": [
         {
-          "name": "4.1 Get User \u2014 Success",
+          "name": "4.1 Get User — Success",
           "event": [
             {
               "listen": "test",
@@ -638,7 +638,7 @@
           }
         },
         {
-          "name": "4.2 Update User \u2014 Invalid Email",
+          "name": "4.2 Update User — Invalid Email",
           "event": [
             {
               "listen": "test",
@@ -690,7 +690,7 @@
           }
         },
         {
-          "name": "4.3 Update User \u2014 Username Too Short",
+          "name": "4.3 Update User — Username Too Short",
           "event": [
             {
               "listen": "test",
@@ -742,7 +742,7 @@
           }
         },
         {
-          "name": "4.4 Update User \u2014 No Fields Provided",
+          "name": "4.4 Update User — No Fields Provided",
           "event": [
             {
               "listen": "test",
@@ -791,7 +791,7 @@
           }
         },
         {
-          "name": "4.5 Update User \u2014 Success",
+          "name": "4.5 Update User — Success",
           "event": [
             {
               "listen": "test",
@@ -845,10 +845,10 @@
       ]
     },
     {
-      "name": "5. Jobs \u2014 CRUD",
+      "name": "5. Jobs — CRUD",
       "item": [
         {
-          "name": "5.1 Create Job \u2014 Missing Required Fields",
+          "name": "5.1 Create Job — Missing Required Fields",
           "event": [
             {
               "listen": "test",
@@ -900,7 +900,7 @@
           }
         },
         {
-          "name": "5.2 Create Job \u2014 Invalid Status",
+          "name": "5.2 Create Job — Invalid Status",
           "event": [
             {
               "listen": "test",
@@ -952,7 +952,7 @@
           }
         },
         {
-          "name": "5.3 Create Job \u2014 Invalid Date",
+          "name": "5.3 Create Job — Invalid Date",
           "event": [
             {
               "listen": "test",
@@ -1004,7 +1004,7 @@
           }
         },
         {
-          "name": "5.4 Create Job \u2014 Empty Company Name",
+          "name": "5.4 Create Job — Empty Company Name",
           "event": [
             {
               "listen": "test",
@@ -1053,7 +1053,7 @@
           }
         },
         {
-          "name": "5.5 Create Job \u2014 Success",
+          "name": "5.5 Create Job — Success",
           "event": [
             {
               "listen": "test",
@@ -1115,7 +1115,7 @@
           }
         },
         {
-          "name": "5.6 Get Jobs \u2014 Default Pagination",
+          "name": "5.6 Get Jobs — Default Pagination",
           "event": [
             {
               "listen": "test",
@@ -1161,7 +1161,7 @@
           }
         },
         {
-          "name": "5.7 Get Jobs \u2014 Limit Exceeds Max",
+          "name": "5.7 Get Jobs — Limit Exceeds Max",
           "event": [
             {
               "listen": "test",
@@ -1211,7 +1211,7 @@
           }
         },
         {
-          "name": "5.8 Get Job By ID \u2014 Success",
+          "name": "5.8 Get Job By ID — Success",
           "event": [
             {
               "listen": "test",
@@ -1259,7 +1259,7 @@
           }
         },
         {
-          "name": "5.9 Get Job By ID \u2014 Not Found",
+          "name": "5.9 Get Job By ID — Not Found",
           "event": [
             {
               "listen": "test",
@@ -1303,7 +1303,7 @@
           }
         },
         {
-          "name": "5.10 Get Job By ID \u2014 Invalid ID Format",
+          "name": "5.10 Get Job By ID — Invalid ID Format",
           "event": [
             {
               "listen": "test",
@@ -1344,7 +1344,7 @@
           }
         },
         {
-          "name": "5.11 Update Job \u2014 No Fields Provided",
+          "name": "5.11 Update Job — No Fields Provided",
           "event": [
             {
               "listen": "test",
@@ -1394,7 +1394,7 @@
           }
         },
         {
-          "name": "5.12 Update Job \u2014 Partial Update Success",
+          "name": "5.12 Update Job — Partial Update Success",
           "event": [
             {
               "listen": "test",
@@ -1452,10 +1452,10 @@
       ]
     },
     {
-      "name": "6. Skills \u2014 CRUD",
+      "name": "6. Skills — CRUD",
       "item": [
         {
-          "name": "6.1 Create Skill \u2014 Missing Fields",
+          "name": "6.1 Create Skill — Missing Fields",
           "event": [
             {
               "listen": "test",
@@ -1504,7 +1504,7 @@
           }
         },
         {
-          "name": "6.2 Create Skill \u2014 Comfort Level Out of Range",
+          "name": "6.2 Create Skill — Comfort Level Out of Range",
           "event": [
             {
               "listen": "test",
@@ -1556,7 +1556,7 @@
           }
         },
         {
-          "name": "6.3 Create Skill \u2014 Empty Skill Name",
+          "name": "6.3 Create Skill — Empty Skill Name",
           "event": [
             {
               "listen": "test",
@@ -1605,7 +1605,7 @@
           }
         },
         {
-          "name": "6.4 Create Skill \u2014 Success",
+          "name": "6.4 Create Skill — Success",
           "event": [
             {
               "listen": "test",
@@ -1667,7 +1667,7 @@
           }
         },
         {
-          "name": "6.5 Get Skills \u2014 Success",
+          "name": "6.5 Get Skills — Success",
           "event": [
             {
               "listen": "test",
@@ -1713,7 +1713,7 @@
           }
         },
         {
-          "name": "6.6 Get Skill By ID \u2014 Success",
+          "name": "6.6 Get Skill By ID — Success",
           "event": [
             {
               "listen": "test",
@@ -1758,7 +1758,7 @@
           }
         },
         {
-          "name": "6.7 Get Skill By ID \u2014 Not Found",
+          "name": "6.7 Get Skill By ID — Not Found",
           "event": [
             {
               "listen": "test",
@@ -1799,7 +1799,7 @@
           }
         },
         {
-          "name": "6.8 Update Skill \u2014 Partial (Comfort Level Only)",
+          "name": "6.8 Update Skill — Partial (Comfort Level Only)",
           "event": [
             {
               "listen": "test",
@@ -1857,10 +1857,10 @@
       ]
     },
     {
-      "name": "7. Contacts \u2014 CRUD",
+      "name": "7. Contacts — CRUD",
       "item": [
         {
-          "name": "7.1 Create Contact \u2014 Missing First Name",
+          "name": "7.1 Create Contact — Missing First Name",
           "event": [
             {
               "listen": "test",
@@ -1912,7 +1912,7 @@
           }
         },
         {
-          "name": "7.2 Create Contact \u2014 Invalid Email",
+          "name": "7.2 Create Contact — Invalid Email",
           "event": [
             {
               "listen": "test",
@@ -1964,7 +1964,7 @@
           }
         },
         {
-          "name": "7.3 Create Contact \u2014 Invalid Phone",
+          "name": "7.3 Create Contact — Invalid Phone",
           "event": [
             {
               "listen": "test",
@@ -2016,7 +2016,7 @@
           }
         },
         {
-          "name": "7.4 Create Contact \u2014 Success",
+          "name": "7.4 Create Contact — Success",
           "event": [
             {
               "listen": "test",
@@ -2078,7 +2078,7 @@
           }
         },
         {
-          "name": "7.5 Get Contact By ID \u2014 Success",
+          "name": "7.5 Get Contact By ID — Success",
           "event": [
             {
               "listen": "test",
@@ -2126,7 +2126,7 @@
           }
         },
         {
-          "name": "7.6 Get Contact By ID \u2014 Not Found",
+          "name": "7.6 Get Contact By ID — Not Found",
           "event": [
             {
               "listen": "test",
@@ -2167,7 +2167,7 @@
           }
         },
         {
-          "name": "7.7 Get Contacts \u2014 Default Pagination",
+          "name": "7.7 Get Contacts — Default Pagination",
           "event": [
             {
               "listen": "test",
@@ -2210,7 +2210,7 @@
           }
         },
         {
-          "name": "7.8 Update Contact \u2014 Partial (Add Notes)",
+          "name": "7.8 Update Contact — Partial (Add Notes)",
           "event": [
             {
               "listen": "test",
@@ -2271,7 +2271,7 @@
       "name": "8. Relational Mapping",
       "item": [
         {
-          "name": "8.1 Assign Skill to Job \u2014 Success",
+          "name": "8.1 Assign Skill to Job — Success",
           "event": [
             {
               "listen": "test",
@@ -2317,7 +2317,7 @@
           }
         },
         {
-          "name": "8.2 Get Skills From Job \u2014 Returns Assigned Skill",
+          "name": "8.2 Get Skills From Job — Returns Assigned Skill",
           "event": [
             {
               "listen": "test",
@@ -2410,7 +2410,7 @@
           }
         },
         {
-          "name": "8.4 Assign Contact to Job \u2014 Missing Relationship Type",
+          "name": "8.4 Assign Contact to Job — Missing Relationship Type",
           "event": [
             {
               "listen": "test",
@@ -2466,7 +2466,7 @@
           }
         },
         {
-          "name": "8.5 Assign Contact to Job \u2014 Success",
+          "name": "8.5 Assign Contact to Job — Success",
           "event": [
             {
               "listen": "test",
@@ -2522,7 +2522,7 @@
           }
         },
         {
-          "name": "8.6 Get Contacts From Job \u2014 Returns Assigned Contact",
+          "name": "8.6 Get Contacts From Job — Returns Assigned Contact",
           "event": [
             {
               "listen": "test",
@@ -2575,7 +2575,7 @@
           }
         },
         {
-          "name": "8.7 Remove Skill from Job \u2014 Success",
+          "name": "8.7 Remove Skill from Job — Success",
           "event": [
             {
               "listen": "test",
@@ -2621,7 +2621,7 @@
           }
         },
         {
-          "name": "8.8 Get Skills From Job \u2014 Confirms Skill Removed",
+          "name": "8.8 Get Skills From Job — Confirms Skill Removed",
           "event": [
             {
               "listen": "test",
@@ -2668,7 +2668,7 @@
           }
         },
         {
-          "name": "8.9 Remove Contact from Job \u2014 Success",
+          "name": "8.9 Remove Contact from Job — Success",
           "event": [
             {
               "listen": "test",
@@ -2717,10 +2717,170 @@
       ]
     },
     {
-      "name": "9. Teardown",
+      "name": "9. Stats — Dashboard",
       "item": [
         {
-          "name": "9.1 Delete Job \u2014 Success",
+          "name": "9.1 Get Dashboard Stats — No Auth",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 401 without auth token\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/stats",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "stats"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9.2 Get Dashboard Stats — Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response has totalJobs field\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property(\"totalJobs\");",
+                  "});",
+                  "pm.test(\"totalJobs is a number\", function () {",
+                  "    pm.expect(pm.response.json().totalJobs).to.be.a(\"number\");",
+                  "});",
+                  "pm.test(\"Response has applied field\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property(\"applied\");",
+                  "});",
+                  "pm.test(\"Response has waiting field\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property(\"waiting\");",
+                  "});",
+                  "pm.test(\"Response has interviewed field\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property(\"interviewed\");",
+                  "});",
+                  "pm.test(\"Response has decision field\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property(\"decision\");",
+                  "});",
+                  "pm.test(\"Response has totalSkills field\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property(\"totalSkills\");",
+                  "});",
+                  "pm.test(\"totalSkills is a number\", function () {",
+                  "    pm.expect(pm.response.json().totalSkills).to.be.a(\"number\");",
+                  "});",
+                  "pm.test(\"Response has averageComfortLevel field\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property(\"averageComfortLevel\");",
+                  "});",
+                  "pm.test(\"Response has skillCoverage array\", function () {",
+                  "    pm.expect(pm.response.json().skillCoverage).to.be.an(\"array\");",
+                  "});",
+                  "pm.test(\"Status counts sum to totalJobs\", function () {",
+                  "    const json = pm.response.json();",
+                  "    const sum = json.applied + json.waiting + json.interviewed + json.decision;",
+                  "    pm.expect(sum).to.eql(json.totalJobs);",
+                  "});",
+                  "pm.test(\"Each skillCoverage item has expected shape\", function () {",
+                  "    const coverage = pm.response.json().skillCoverage;",
+                  "    coverage.forEach(function (item) {",
+                  "        pm.expect(item).to.have.property(\"skillName\");",
+                  "        pm.expect(item).to.have.property(\"comfortLevel\");",
+                  "        pm.expect(item).to.have.property(\"jobsWithSkill\");",
+                  "        pm.expect(item).to.have.property(\"percentageOfJobs\");",
+                  "        pm.expect(item.percentageOfJobs).to.be.within(0, 100);",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/stats",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "stats"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9.3 Get Dashboard Stats — Invalid Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 401 for invalid token\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "invalid.token.value",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{app_url}}/api/stats",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "stats"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Teardown",
+      "item": [
+        {
+          "name": "10.1 Delete Job — Success",
           "event": [
             {
               "listen": "test",
@@ -2764,7 +2924,7 @@
           }
         },
         {
-          "name": "9.2 Verify Job Deleted \u2014 Returns 404",
+          "name": "10.2 Verify Job Deleted — Returns 404",
           "event": [
             {
               "listen": "test",
@@ -2805,7 +2965,7 @@
           }
         },
         {
-          "name": "9.3 Delete Skill \u2014 Success",
+          "name": "10.3 Delete Skill — Success",
           "event": [
             {
               "listen": "test",
@@ -2846,7 +3006,7 @@
           }
         },
         {
-          "name": "9.4 Verify Skill Deleted \u2014 Returns 404",
+          "name": "10.4 Verify Skill Deleted — Returns 404",
           "event": [
             {
               "listen": "test",
@@ -2887,7 +3047,7 @@
           }
         },
         {
-          "name": "9.5 Delete Contact \u2014 Success",
+          "name": "10.5 Delete Contact — Success",
           "event": [
             {
               "listen": "test",
@@ -2928,7 +3088,7 @@
           }
         },
         {
-          "name": "9.6 Verify Contact Deleted \u2014 Returns 404",
+          "name": "10.6 Verify Contact Deleted — Returns 404",
           "event": [
             {
               "listen": "test",
@@ -2969,7 +3129,7 @@
           }
         },
         {
-          "name": "9.7 Delete User \u2014 Wrong Password",
+          "name": "10.7 Delete User — Wrong Password",
           "event": [
             {
               "listen": "test",
@@ -3018,7 +3178,7 @@
           }
         },
         {
-          "name": "9.8 Delete User \u2014 No Password Provided",
+          "name": "10.8 Delete User — No Password Provided",
           "event": [
             {
               "listen": "test",
@@ -3067,7 +3227,7 @@
           }
         },
         {
-          "name": "9.9 Delete User \u2014 Success (Cleanup)",
+          "name": "10.9 Delete User — Success (Cleanup)",
           "event": [
             {
               "listen": "test",

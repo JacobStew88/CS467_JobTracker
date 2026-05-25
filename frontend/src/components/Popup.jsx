@@ -3,7 +3,7 @@ export default function Popup({ isOpen, onClose, children }) {
 
   return (
     <div className="popup-overlay" onClick={onClose}>
-      <div className="popup" onClick={(e) => e.stopPropagation()}>
+      <div className="card--popup" onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>

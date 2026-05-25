@@ -46,12 +46,12 @@ export default function Profile() {
   }, []);
 
   return (
-    <div className="body dashboard-page">
-      <section className="dashboard-header">
+    <div className="dashboard-page">
+      <header className="dashboard-header">
         <h1>Dashboard</h1>
         <img src={profile.avatar} className="profile-avatar" />
         <h2>Welcome, User #{user?.user_id}</h2>
-      </section>
+      </header>
 
       <section className="dashboard-section">
         <h2 className="dashboard-section-title">Application Summary</h2>
@@ -105,16 +105,18 @@ export default function Profile() {
             </Card>
           ) : (
             stats.skillCoverage.map((skill) => (
-              <Card key={skill.skillName}>
-                <h3>{skill.skillName}</h3>
-                <p>Comfort: {skill.comfortLevel} / 5</p>
-                <p>
-                  Jobs using skill: {skill.jobsWithSkill} / {stats.totalJobs}
-                </p>
-                <p>{skill.percentageOfJobs}% of jobs</p>
-              </Card>
-            ))
-          )}
+            <Card key={skill.skillName} className="card--skill">
+              <h3>{skill.skillName}</h3>
+              <div className="skill-stats">
+                <span>Comfort</span>
+                <strong>{skill.comfortLevel} / 5</strong>
+                <span>Jobs Using</span>
+                <strong> {skill.jobsWithSkill} / {stats.totalJobs} </strong>
+                <span>Coverage</span>
+                <strong>{skill.percentageOfJobs}%</strong>
+              </div>
+            </Card>
+            )))}
         </div>
       </section>
     </div>

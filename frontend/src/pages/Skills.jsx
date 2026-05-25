@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import {
-  getSkills,
-  createSkill,
-  deleteSkill,
-} from "../services/skillService";
+import { getSkills, createSkill, deleteSkill, } from "../services/skillService";
+import Input from "../components/Input"
 
 export default function Skills() {
   const [skills, setSkills] = useState([]);
   const [skillName, setSkillName] = useState("");
   const [level, setLevel] = useState(3);
+  const suggestedSkills = [ "React", "JavaScript", "TypeScript",
+    "Node.js", "Express", "PostgreSQL", "mySQL", "Python", "Docker",
+    "AWS", "Git", "HTML", "CSS", ];
 
   async function loadSkills() {
     const data = await getSkills();
@@ -37,18 +37,27 @@ export default function Skills() {
     loadSkills();
   }
 
-  return (
-    <div className="body">
-      <h1>Skills</h1>
+return (
+  <div className="body">
+    <h1>Skills</h1>
+    <div className="skills-panel">
+      {/* Suggested Skills */}
+        <div className="chip-row">
+          {suggestedSkills.map((skill) => (
+            <button key={skill} type="button" className="chip"
+              onClick={() => setSkillName(skill)}>
+                {skill}
+            </button>
+          ))}
+          </div>
 
-      {/* ADD FORM */}
-      <form onSubmit={handleAdd}>
-        <input
-          placeholder="Skill name"
+      {/* ADD BAR */}
+      <form className="add-row" onSubmit={handleAdd}>
+        <Input
+          placeholder="Skill Name"
           value={skillName}
           onChange={(e) => setSkillName(e.target.value)}
         />
-
         <select
           value={level}
           onChange={(e) => setLevel(Number(e.target.value))}
@@ -59,19 +68,27 @@ export default function Skills() {
           <option value={4}>4</option>
           <option value={5}>5</option>
         </select>
-
-        <button type="submit">Add Skill</button>
+        <button type="submit">Create Skill</button>
       </form>
 
       {/* LIST */}
-      {skills.map((skill) => (
-        <div key={skill.skill_id}>
-          {skill.skill_name} ({skill.comfort_level})
-          <button onClick={() => handleDelete(skill.skill_id)}>
-            Delete
-          </button>
-        </div>
-      ))}
+      <div className="chip-row">
+        {skills.map((skill) => (
+          <span key={skill.skill_id} className="chip">
+            {skill.skill_name}
+            <span className="chip-meta">
+              {skill.comfort_level}/5
+            </span>
+            <button
+              className="chip-remove"
+              onClick={() => handleDelete(skill.skill_id)}
+            >
+              ×
+            </button>
+          </span>
+        ))}
+      </div>
     </div>
-  );
+  </div>
+);
 }

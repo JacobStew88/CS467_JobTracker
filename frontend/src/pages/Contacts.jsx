@@ -1,30 +1,46 @@
 import { useEffect, useState } from "react";
-import { getContacts, createContact, deleteContact } from "../services/contactService";
+import {
+  getContacts,
+  createContact,
+  deleteContact,
+  updateContact
+} from "../services/contactService";
+
 import Button from "../components/Button";
-import Card from "../components/Card";
+import ContactCard from "../components/ContactCard";
+import ContactFormPopup from "../components/ContactFormPopup";
 
 export default function Contacts() {
   const [contacts, setContacts] = useState([]);
 
-  const [form, setForm] = useState({
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editingContact, setEditingContact] = useState(null);
+
+  const emptyForm = {
     first_name: "",
     last_name: "",
     email: "",
     phone: "",
     notes: ""
-  });
+  };
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+
+  // -------------------------
+  // LOAD CONTACTS
+  // -------------------------
+  useEffect(() => {
+    loadContacts();
+  }, []);
 
   async function loadContacts() {
     const data = await getContacts();
     setContacts(data);
   }
 
-  useEffect(() => {
-    loadContacts();
-  }, []);
-
+  // -------------------------
+  // FORM HANDLING
+  // -------------------------
   function handleChange(e) {
     setForm((prev) => ({
       ...prev,
@@ -32,6 +48,9 @@ export default function Contacts() {
     }));
   }
 
+  // -------------------------
+  // ADD CONTACT
+  // -------------------------
   async function handleCreate(e) {
     e.preventDefault();
 
@@ -39,9 +58,39 @@ export default function Contacts() {
 
     setContacts((prev) => [...prev, newContact]);
 
-    setIsOpen(false);
+    setIsAddOpen(false);
+    setForm(emptyForm);
   }
 
+  // -------------------------
+  // EDIT CONTACT
+  // -------------------------
+  function openEdit(contact) {
+    setEditingContact(contact);
+    setForm(contact);
+  }
+
+  async function handleUpdate(e) {
+    e.preventDefault();
+
+    const updated = await updateContact(
+      editingContact.contact_id,
+      form
+    );
+
+    setContacts((prev) =>
+      prev.map((c) =>
+        c.contact_id === updated.contact_id ? updated : c
+      )
+    );
+
+    setEditingContact(null);
+    setForm(emptyForm);
+  }
+
+  // -------------------------
+  // DELETE CONTACT
+  // -------------------------
   async function handleDelete(id) {
     await deleteContact(id);
 
@@ -50,96 +99,61 @@ export default function Contacts() {
     );
   }
 
+  // -------------------------
+  // RENDER
+  // -------------------------
   return (
     <div className="body">
       <h1>Contacts</h1>
 
-      <Button onClick={() => setIsOpen(true)}>
+      <Button
+        onClick={() => {
+          setForm(emptyForm);
+          setIsAddOpen(true);
+        }}
+      >
         + Add Contact
       </Button>
 
-      <Card>
+      {/* CONTACT LIST */}
+      <div className="card-grid">
         {contacts.length === 0 ? (
           <p>No contacts yet</p>
         ) : (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th />
-              </tr>
-            </thead>
-
-            <tbody>
-              {contacts.map((c) => (
-                <tr key={c.contact_id}>
-                  <td>
-                    {c.first_name} {c.last_name}
-                  </td>
-                  <td>{c.email}</td>
-                  <td>{c.phone}</td>
-
-                  <td>
-                    <Button
-                      onClick={() =>
-                        handleDelete(c.contact_id)
-                      }
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          contacts.map((c) => (
+            <ContactCard
+              key={c.contact_id}
+              contact={c}
+              onDelete={handleDelete}
+              onEdit={openEdit}
+            />
+          ))
         )}
-      </Card>
+      </div>
 
-      {isOpen && (
-        <div className="modal">
-          <Card>
-            <h2>Add Contact</h2>
+      {/* ADD CONTACT */}
+      <ContactFormPopup
+        isOpen={isAddOpen}
+        onClose={() => setIsAddOpen(false)}
+        title="Add Contact"
+        form={form}
+        onChange={handleChange}
+        onSubmit={handleCreate}
+      />
 
-            <form onSubmit={handleCreate}>
-              <input
-                name="first_name"
-                placeholder="First name"
-                onChange={handleChange}
-              />
-
-              <input
-                name="last_name"
-                placeholder="Last name"
-                onChange={handleChange}
-              />
-
-              <input
-                name="email"
-                placeholder="Email"
-                onChange={handleChange}
-              />
-
-              <input
-                name="phone"
-                placeholder="Phone"
-                onChange={handleChange}
-              />
-
-              <textarea
-                name="notes"
-                placeholder="Notes"
-                onChange={handleChange}
-              />
-
-              <Button type="submit">
-                Create
-              </Button>
-            </form>
-          </Card>
-        </div>
-      )}
+      {/* EDIT CONTACT */}
+      <ContactFormPopup
+        isOpen={Boolean(editingContact)}
+        onClose={() => {
+          setEditingContact(null);
+          setForm(emptyForm);
+        }}
+        title="Edit Contact"
+        form={form}
+        onChange={handleChange}
+        onSubmit={handleUpdate}
+        isEdit
+      />
     </div>
   );
 }

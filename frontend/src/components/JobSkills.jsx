@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getSkillsForJob, assignSkillToJob, removeSkillFromJob, getSkills } from "../services/skillService";
+import Button from "../components/Button"
 
 export default function JobSkills({ jobId }) {
   const [skills, setSkills] = useState([]);
@@ -51,35 +52,40 @@ export default function JobSkills({ jobId }) {
       alert(err.message);
     }
   }
+
+
   return (
-    <div>
+    <div className="skill-block">
       {/* Existing skills */}
-      {skills.map((s) => (
-        <span key={s.skill_id}>
-          {s.skill_name}
-          <button onClick={() => handleRemove(s.skill_id)}>
-            x
-          </button>
-        </span>
-      ))}
-
-      {/* Add skill */}
-      <div>
-        <select
-          value={selectedSkill}
-          onChange={(e) => setSelectedSkill(e.target.value)}
-        >
-          <option value="">Skill</option>
-
-          {allSkills.map((s) => (
-            <option key={s.skill_id} value={s.skill_id}>
-              {s.skill_name}
-            </option>
-          ))}
-        </select>
-
-        <button onClick={handleAssign}>+</button>
+      <div className="chip-row">
+        {skills.map((s) => (
+          <span key={s.skill_id} className="chip chip-added">
+            {s.skill_name}
+            <button
+              className="chip-remove"
+              onClick={() => handleRemove(s.skill_id)}
+            >
+              ×
+            </button>
+          </span>
+        ))}
       </div>
+
+    {/* Add skill */}
+    <div className="skill-add">
+      <select
+        value={selectedSkill}
+        onChange={(e) => setSelectedSkill(e.target.value)}
+      >
+        <option value="">Select Skill</option>
+        {allSkills.map((s) => (
+          <option key={s.skill_id} value={s.skill_id}>
+            {s.skill_name}
+          </option>
+        ))}
+      </select>
+      <Button onClick={handleAssign}>+</Button>
     </div>
-  );
+  </div>
+);
 }
