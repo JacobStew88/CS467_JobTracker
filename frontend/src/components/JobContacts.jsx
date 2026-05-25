@@ -64,7 +64,7 @@ return (
     {/* existing contacts */}
     <div className="chip-row">
       {contacts.map((contact) => (
-        <span key={contact.contact_id} className="chip">
+        <span key={contact.contact_id} className="chip chip-added">
           {contact.first_name} {contact.last_name}
           <span className="chip-meta">
             {contact.relationship_type}

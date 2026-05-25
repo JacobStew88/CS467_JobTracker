@@ -15,26 +15,25 @@ export default function JobCard({ job, onEdit, onDelete }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="job-card">
+    <div className="card card--job">
       {/* top row */}
-      <div className="job-card-header">
+      <div className="card-header">
         <div>
           <h3>{job.company_name}</h3>
-          <p className="job-title">{job.job_title}</p>
+          <p className="card-title">{job.job_title}</p>
         </div>
-
-        <span className={`status status-${job.status}`}>
-          {job.status.replace(/^./, char => char.toUpperCase())}
+          <span className={`status status-${job.status}`}>
+            {job.status.replace(/^./, char => char.toUpperCase())}
+          </span>
+      </div>
+      <div className="card-meta">
+        <span>
+          {formatDate(job.application_date)}
         </span>
       </div>
-
-      {/* meta row */}
-      <div className="job-meta">
-        <span>{formatDate(job.application_date)}</span>
-      </div>
-
+      
       {/* actions */}
-      <div className="job-actions">
+      <div className="card-actions">
         <button onClick={() => setOpen(!open)}>
           {open ? "Hide details" : "View details"}
         </button>
@@ -47,7 +46,7 @@ export default function JobCard({ job, onEdit, onDelete }) {
 
       {/* expandable section */}
       {open && (
-        <div className="job-details">
+        <div className="card-details">
           <div className="detail-section">
             <h4>Skills</h4>
             <JobSkills jobId={job.job_id} />

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getSkillsForJob, assignSkillToJob, removeSkillFromJob, getSkills } from "../services/skillService";
+import Button from "../components/Button"
 
 export default function JobSkills({ jobId }) {
   const [skills, setSkills] = useState([]);
@@ -58,7 +59,7 @@ export default function JobSkills({ jobId }) {
       {/* Existing skills */}
       <div className="chip-row">
         {skills.map((s) => (
-          <span key={s.skill_id} className="chip">
+          <span key={s.skill_id} className="chip chip-added">
             {s.skill_name}
             <button
               className="chip-remove"
@@ -69,6 +70,7 @@ export default function JobSkills({ jobId }) {
           </span>
         ))}
       </div>
+
     {/* Add skill */}
     <div className="skill-add">
       <select
@@ -82,8 +84,7 @@ export default function JobSkills({ jobId }) {
           </option>
         ))}
       </select>
-
-      <button onClick={handleAssign}>+</button>
+      <Button onClick={handleAssign}>+</Button>
     </div>
   </div>
 );

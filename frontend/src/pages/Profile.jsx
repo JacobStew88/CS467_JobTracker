@@ -105,7 +105,7 @@ export default function Profile() {
             </Card>
           ) : (
             stats.skillCoverage.map((skill) => (
-            <Card key={skill.skillName} className="skill-card">
+            <Card key={skill.skillName} className="card--skill">
               <h3>{skill.skillName}</h3>
               <div className="skill-stats">
                 <span>Comfort</span>

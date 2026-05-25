@@ -141,7 +141,7 @@ export default function Jobs() {
         {jobs.length === 0 ? (
           <p>No jobs yet</p>
         ) : (
-        <div className="jobs-grid">
+        <div className="card-grid">
           {jobs.map((job) => (
             <JobCard
             key={job.job_id}

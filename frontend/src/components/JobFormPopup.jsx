@@ -11,6 +11,7 @@ export default function JobFormPopup({
   onSubmit,
   isEdit = false,
 }) {
+  
   return (
     <Popup isOpen={isOpen} onClose={onClose}>
       <h2>{title}</h2>
@@ -53,7 +54,7 @@ export default function JobFormPopup({
           {isEdit ? "Save" : "Create"}
         </Button>
 
-        <Button type="button" onClick={onClose}>
+        <Button onClick={onClose}>
           Cancel
         </Button>
         </div>
