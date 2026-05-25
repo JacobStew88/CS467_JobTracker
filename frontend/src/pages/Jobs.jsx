@@ -5,6 +5,7 @@ import Card from "../components/Card";
 import JobFormPopup from "../components/JobFormPopup";
 import JobContacts from "../components/JobContacts";
 import JobSkills from "../components/JobSkills";
+import JobCard from "../components/JobCard";
 
 export default function Jobs() {
   const [jobs, setJobs] = useState([]);
@@ -131,14 +132,6 @@ export default function Jobs() {
     }
   }
 
-  function formatDate(date) {
-    if (!date) return "—";
-    const [year, month, day] = date
-      .slice(0, 10)
-      .split("-");
-    return `${month}/${day}/${year}`;
-  }
-
   // RENDER
   return (
     <div className="body">
@@ -148,49 +141,17 @@ export default function Jobs() {
         {jobs.length === 0 ? (
           <p>No jobs yet</p>
         ) : (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Company</th>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Skills</th>
-                <th>Date</th>
-                <th />
-              </tr>
-            </thead>
-<tbody>
-  {jobs.map((job) => (
-    <tr key={job.job_id}>
-      <td>{job.company_name}</td>
-      <td>{job.job_title}</td>
-
-      <td className={`status status-${job.status}`}>
-        {job.status}
-      </td>
-      <td>
-        <JobSkills jobId={job.job_id} />
-      </td>
-      <td>
-        <JobContacts jobId={job.job_id} />
-      </td>
-
-      {/*Date stays after skills */}
-      <td>{formatDate(job.application_date)}</td>
-
-      {/*Actions */}
-      <td>
-        <div className="button-group">
-          <Button onClick={() => openEdit(job)}>Edit</Button>
-          <Button onClick={() => handleDelete(job.job_id)}>Delete</Button>
+        <div className="jobs-grid">
+          {jobs.map((job) => (
+            <JobCard
+            key={job.job_id}
+            job={job}
+            onEdit={openEdit}
+            onDelete={handleDelete}
+            />
+          ))}
         </div>
-      </td>
-    </tr>
-  ))}
-</tbody>
-
-          </table>
-        )}
+      )}
       </Card>
       {/* EDIT SCREEN */}
       <JobFormPopup
