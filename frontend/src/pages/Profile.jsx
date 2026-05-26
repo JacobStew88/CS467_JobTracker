@@ -88,7 +88,7 @@ export default function Profile() {
           </Card>
 
           <Card>
-            <h3>Avg. Comfort</h3>
+            <h3>Avg Comfort</h3>
             <p>{stats.averageComfortLevel ?? "N/A"}</p>
           </Card>
         </div>
