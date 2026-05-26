@@ -37,8 +37,6 @@ USER expressuser
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
 
-# Make sure /app is writable during install
-RUN chown -R expressuser:nodejs /app
 
 # Install production dependencies
 RUN npm ci --omit=dev
