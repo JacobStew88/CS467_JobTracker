@@ -27,10 +27,8 @@ RUN npm run build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
-# Set environment to production
 ENV NODE_ENV=production
 
-# Security: Create and use a non-root user
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 expressuser
 USER expressuser
@@ -39,11 +37,16 @@ USER expressuser
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
 
-# Install ONLY production dependencies (this removes tsc, ts-node-dev, etc.)
+# Make sure /app is writable during install
+RUN chown -R expressuser:nodejs /app
+
+# Install production dependencies
 RUN npm ci --omit=dev
 
 # Express port (must match your app.listen port)
+# Drop privileges after install
+USER expressuser
+
 EXPOSE 3000
 
-# Start the server using your "start" script
 CMD ["node", "dist/server.js"]
