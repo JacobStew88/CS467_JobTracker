@@ -607,7 +607,7 @@ html, body {
   padding: 16px;
   background: var(--card);
   box-shadow: 0 6px 18px var(--bkbg);
-  transition: transform 0.15s ease; 
+  transition: transform 0.15s ease;
 }
 
 .stats-grid > *:hover {
@@ -644,6 +644,24 @@ html, body {
   margin: 0;
   font-size: 15px;
   opacity: 0.9;
+}
+
+.skill-summary-card {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.skill-summary-card .card {
+  width: 420px;
+  max-width: 90%;
+  text-align: center;
+}
+
+.skill-summary-card .card p {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 1rem;
 }
 
 .skill-stats {
