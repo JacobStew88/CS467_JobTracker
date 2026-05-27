@@ -86,37 +86,41 @@ export default function Profile() {
             <h3>Total Skills</h3>
             <p>{stats.totalSkills}</p>
           </Card>
-
-          <Card>
-            <h3>Avg Comfort</h3>
-            <p>{stats.averageComfortLevel ?? "N/A"}</p>
-          </Card>
         </div>
       </section>
 
       <section className="dashboard-section">
-        <h2 className="dashboard-section-title">Skill Coverage</h2>
+        <h2 className="dashboard-section-title">Skill Insights</h2>
+
+        <div className="skill-summary-card">
+          <Card>
+            <h3>Average Comfort with Required Job Skills</h3>
+            <p>{stats.averageComfortLevel === null ? "N/A" : `${stats.averageComfortLevel} / 5`}</p>
+          </Card>
+        </div>
 
         <div className="skill-coverage-grid">
           {stats.skillCoverage.length === 0 ? (
             <Card>
               <h3>No skills yet</h3>
-              <p>Add skills and assign them to jobs to see coverage.</p>
+              <p>Add skills and assign them to jobs to see skill insights.</p>
             </Card>
           ) : (
             stats.skillCoverage.map((skill) => (
-            <Card key={skill.skillName} className="card--skill">
-              <h3>{skill.skillName}</h3>
-              <div className="skill-stats">
-                <span>Comfort</span>
-                <strong>{skill.comfortLevel} / 5</strong>
-                <span>Jobs Using</span>
-                <strong> {skill.jobsWithSkill} / {stats.totalJobs} </strong>
-                <span>Coverage</span>
-                <strong>{skill.percentageOfJobs}%</strong>
-              </div>
-            </Card>
-            )))}
+              <Card key={skill.skillName} className="card--skill">
+                <h3>{skill.skillName}</h3>
+                <div className="skill-stats">
+                  <span>Comfort</span>
+                  <strong>{skill.comfortLevel} / 5</strong>
+
+                  <span>Jobs Requiring</span>
+                  <strong>
+                    {skill.jobsWithSkill} / {stats.totalJobs}
+                  </strong>
+                </div>
+              </Card>
+            ))
+          )}
         </div>
       </section>
     </div>
