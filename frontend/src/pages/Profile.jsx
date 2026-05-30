@@ -25,6 +25,7 @@ export default function Profile() {
 
     if (token) {
       const decoded = jwtDecode(token);
+      console.log(decoded);
       setUser(decoded);
     }
 
@@ -50,7 +51,8 @@ export default function Profile() {
       <header className="dashboard-header">
         <h1>Dashboard</h1>
         <img src={profile.avatar} className="profile-avatar" />
-        <h2>Welcome, User #{user?.user_id}</h2>
+        <h2>Welcome, User #{user?.username.replace
+        (/^./, char => char.toUpperCase())}</h2>
       </header>
 
       <section className="dashboard-section">

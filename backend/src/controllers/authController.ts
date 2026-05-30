@@ -47,7 +47,7 @@ export const userLogin = withErrorHandling(async (req: Request, res: Response): 
     if (!isPasswordValid) { res.status(401).json(ERROR_INVALID_CRED); return} 
 
     // Create and the give the tocken back to the user
-    const token = jwt.sign({ user_id: user.user_id } as JWTUserPayload, JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ user_id: user.user_id, username: user.username } as JWTUserPayload, JWT_SECRET, { expiresIn: '24h' });
     res.status(200).json({ token });
 });
 
