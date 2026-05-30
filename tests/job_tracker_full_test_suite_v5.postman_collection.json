@@ -2725,12 +2725,12 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Returns 401 without auth token\", function () {",
                   "    pm.response.to.have.status(401);",
                   "});"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ],
@@ -2750,62 +2750,17 @@
           }
         },
         {
-          "name": "9.2 Get Dashboard Stats — Success",
+          "name": "9.2 Get Dashboard Stats — Invalid Token",
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Returns 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"Response has totalJobs field\", function () {",
-                  "    pm.expect(pm.response.json()).to.have.property(\"totalJobs\");",
-                  "});",
-                  "pm.test(\"totalJobs is a number\", function () {",
-                  "    pm.expect(pm.response.json().totalJobs).to.be.a(\"number\");",
-                  "});",
-                  "pm.test(\"Response has applied field\", function () {",
-                  "    pm.expect(pm.response.json()).to.have.property(\"applied\");",
-                  "});",
-                  "pm.test(\"Response has waiting field\", function () {",
-                  "    pm.expect(pm.response.json()).to.have.property(\"waiting\");",
-                  "});",
-                  "pm.test(\"Response has interviewed field\", function () {",
-                  "    pm.expect(pm.response.json()).to.have.property(\"interviewed\");",
-                  "});",
-                  "pm.test(\"Response has decision field\", function () {",
-                  "    pm.expect(pm.response.json()).to.have.property(\"decision\");",
-                  "});",
-                  "pm.test(\"Response has totalSkills field\", function () {",
-                  "    pm.expect(pm.response.json()).to.have.property(\"totalSkills\");",
-                  "});",
-                  "pm.test(\"totalSkills is a number\", function () {",
-                  "    pm.expect(pm.response.json().totalSkills).to.be.a(\"number\");",
-                  "});",
-                  "pm.test(\"Response has averageComfortLevel field\", function () {",
-                  "    pm.expect(pm.response.json()).to.have.property(\"averageComfortLevel\");",
-                  "});",
-                  "pm.test(\"Response has skillCoverage array\", function () {",
-                  "    pm.expect(pm.response.json().skillCoverage).to.be.an(\"array\");",
-                  "});",
-                  "pm.test(\"Status counts sum to totalJobs\", function () {",
-                  "    const json = pm.response.json();",
-                  "    const sum = json.applied + json.waiting + json.interviewed + json.decision;",
-                  "    pm.expect(sum).to.eql(json.totalJobs);",
-                  "});",
-                  "pm.test(\"Each skillCoverage item has expected shape\", function () {",
-                  "    const coverage = pm.response.json().skillCoverage;",
-                  "    coverage.forEach(function (item) {",
-                  "        pm.expect(item).to.have.property(\"skillName\");",
-                  "        pm.expect(item).to.have.property(\"comfortLevel\");",
-                  "        pm.expect(item).to.have.property(\"jobsWithSkill\");",
-                  "        pm.expect(item).to.have.property(\"percentageOfJobs\");",
-                  "        pm.expect(item.percentageOfJobs).to.be.within(0, 100);",
-                  "    });",
+                  "pm.test(\"Returns 401 for invalid token\", function () {",
+                  "    pm.response.to.have.status(401);",
                   "});"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ],
@@ -2815,7 +2770,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{jwt_token}}",
+                  "value": "invalid.token.value",
                   "type": "string"
                 }
               ]
@@ -2835,17 +2790,68 @@
           }
         },
         {
-          "name": "9.3 Get Dashboard Stats — Invalid Token",
+          "name": "9.3 Get Dashboard Stats — Success",
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Returns 401 for invalid token\", function () {",
-                  "    pm.response.to.have.status(401);",
+                  "pm.test(\"Returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const json = pm.response.json();",
+                  "",
+                  "pm.test(\"Job status fields are non-negative integers\", function () {",
+                  "    [\"totalJobs\", \"applied\", \"waiting\", \"interviewed\", \"decision\"].forEach(function (field) {",
+                  "        pm.expect(json).to.have.property(field);",
+                  "        pm.expect(json[field]).to.be.a(\"number\");",
+                  "        pm.expect(json[field]).to.be.at.least(0);",
+                  "        pm.expect(json[field] % 1).to.eql(0);",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test(\"Status counts sum to totalJobs\", function () {",
+                  "    const sum = json.applied + json.waiting + json.interviewed + json.decision;",
+                  "    pm.expect(sum).to.eql(json.totalJobs);",
+                  "});",
+                  "",
+                  "pm.test(\"totalSkills is a non-negative integer\", function () {",
+                  "    pm.expect(json).to.have.property(\"totalSkills\");",
+                  "    pm.expect(json.totalSkills).to.be.a(\"number\");",
+                  "    pm.expect(json.totalSkills).to.be.at.least(0);",
+                  "    pm.expect(json.totalSkills % 1).to.eql(0);",
+                  "});",
+                  "",
+                  "pm.test(\"averageComfortLevel is null or a number rounded to 2dp\", function () {",
+                  "    pm.expect(json).to.have.property(\"averageComfortLevel\");",
+                  "    if (json.averageComfortLevel === null) {",
+                  "        pm.expect(json.averageComfortLevel).to.be.null;",
+                  "    } else {",
+                  "        pm.expect(json.averageComfortLevel).to.be.a(\"number\");",
+                  "        pm.expect(json.averageComfortLevel).to.be.within(1, 5);",
+                  "        const dp = (json.averageComfortLevel.toString().split(\".\")[1] || \"\").length;",
+                  "        pm.expect(dp).to.be.at.most(2);",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test(\"skillCoverage is an array\", function () {",
+                  "    pm.expect(json.skillCoverage).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "pm.test(\"Each skillCoverage entry has correct shape and value ranges\", function () {",
+                  "    json.skillCoverage.forEach(function (item) {",
+                  "        pm.expect(item.skillName).to.be.a(\"string\").and.not.empty;",
+                  "        pm.expect(item.comfortLevel).to.be.a(\"number\").and.to.be.within(1, 5);",
+                  "        pm.expect(item.jobsWithSkill).to.be.a(\"number\").and.to.be.at.least(0);",
+                  "        pm.expect(item.jobsWithSkill % 1).to.eql(0);",
+                  "        pm.expect(item.percentageOfJobs).to.be.a(\"number\").and.to.be.within(0, 100);",
+                  "        const dp = (item.percentageOfJobs.toString().split(\".\")[1] || \"\").length;",
+                  "        pm.expect(dp).to.be.at.most(1);",
+                  "    });",
                   "});"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ],
@@ -2855,7 +2861,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "invalid.token.value",
+                  "value": "{{jwt_token}}",
                   "type": "string"
                 }
               ]
