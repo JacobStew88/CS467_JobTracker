@@ -2,9 +2,11 @@
 
 A full-stack web application for running a job search end to end — tracking applications and their statuses, the skills each role calls for, the people attached to each opportunity, and a dashboard that rolls it all up.
 
-[**Live demo →**](https://jobtracker-frontend-2hea.onrender.com/) · demo login `TestUser` / `Test123!`
+[**Live demo →**](https://jobtracker-frontend-2hea.onrender.com/)
 
-> Hosted on Render's free tier, so the first request after a period of inactivity takes ~30–60 seconds to wake the server. Subsequent requests are fast.
+> ⚠️ The demo's database (Aiven free trial) has expired, so login and all data-backed routes
+> currently return `500`. The frontend and read-only routes still load. Fixing this is tracked
+> as an open TODO.
 
 Built as the capstone project for CS467 at Oregon State University.
 
@@ -255,6 +257,8 @@ Links jobs to skills and contacts. Both IDs are supplied in the URL.
 
 ## Known limitations
 
+- **Demo database is currently offline.** The Aiven free trial backing the live demo expired;
+  auth and all data routes return `500` until it's migrated to a new instance.
 - **Relation endpoints don't verify ownership.** The join routes between jobs, skills, and contacts accept IDs from the URL without confirming those records belong to the requesting user, which means an authenticated user could alter another user's relations. The fix is an ownership check in the middleware layer before the join is written — worth doing before this is used with real data.
 - Render's free tier spins down when idle, so the first request after a quiet period is slow.
 
