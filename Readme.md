@@ -16,6 +16,6 @@ Note: You need to change env to match port and url for test prod or dev
 `newman run job_tracker_full_test_suite_v3.postman_collection.json -e job_tracker_local.postman_environment.json`
 
 ## Create .env file
-i. PORT = YOURPORTOFCHOICE
-ii. DATABASE_URL = LOCALDBURL
-iii. JWT_SECRET = SECERETOFCHOICE
+- PORT = YOURPORTOFCHOICE
+- DATABASE_URL = LOCALDBURL
+- JWT_SECRET = SECERETOFCHOICE
